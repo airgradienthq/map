@@ -1,0 +1,88 @@
+@import '~@angular/material/theming';
+@include mat-core();
+
+
+$my-blue: (
+  50: #1b75bc,
+  100: #1b75bc,
+  200: #1b75bc,
+  300: #1b75bc,
+  400: #1b75bc,
+  500: #1b75bc,
+  600: #1b75bc,
+  700: #1b75bc,
+  800: #1b75bc,
+  900: #1b75bc,
+  A100: #82b1ff,
+  A200: #448aff,
+  A400: #2979ff,
+  A700: #2962ff,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
+$my-orange: (
+  50 : #fce9e3,
+  100 : #f8c9ba,
+  200 : #f3a58c,
+  300 : #ee805e,
+  400 : #ea653c,
+  500 : #e64a19,
+  600 : #e34316,
+  700 : #df3a12,
+  800 : #db320e,
+  900 : #d52208,
+  A100 : #d52208,
+  A200 : #d52208,
+  A400 : #d52208,
+  A700 : #d52208,
+  contrast: (
+    50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+  )
+);
+
+
+
+//FAA61A
+
+
+$candy-app-primary: mat-palette($my-blue);
+$candy-app-accent:  mat-palette($my-orange, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$candy-app-warn:    mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent, $candy-app-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($candy-app-theme);

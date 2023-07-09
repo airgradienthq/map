@@ -1,0 +1,15 @@
+Welcome to the AirGradient Map Application Source Code
+
+We at AirGradient want to make air quality monitoring more accessible and contribute with our knowledge towards better air quality monitors as well as communication on air quality measurements. As a result many of our products and services (including our indoor and outdoor air quality monitors) are open-hardware and open-source.
+
+Part of these open-source project is also this AirQuality map that we develop together with the community to show current air quality around the world. The data we use here come currently from two sources:
+
+a. OpenAQ, a non-profit with the mission to collect, organize and make available air quality data from all around the world
+b. AirGradient, data from our open-hardware air quality monitors
+
+Many thanks to all contributors of this project.
+
+
+License: CC BY-SA 4.0
+
+

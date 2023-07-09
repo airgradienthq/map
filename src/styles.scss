@@ -1,0 +1,47 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@import '~maplibre-gl/dist/maplibre-gl.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+$grey: #293241;
+$red: #ee6c4d;
+$cyan: #e0fbfc;
+$lightblue: #98c1d9;
+$darkblue: #3d5a80;
+
+.mat-button-toggle{
+  background-color: #fff;
+  color:  $grey;
+}
+
+//.mat-button-toggle:hover {
+//  background-color: #fff;
+//  color: $grey !important;
+//}
+
+.mat-button-toggle-checked {
+  background-color:$red;
+  color: #ffffff !important;
+}
+
+.label {
+  color: $grey;
+  font-size: 14px;
+ margin-bottom: 5px !important;
+}
+
+.subheader {
+  color: $grey;
+  font-size: 22px;
+  margin-bottom: 22px !important;
+  margin-top: 6px !important;
+}
+
+.widgetcontainer {
+  margin: 20px;
+}
+
+
