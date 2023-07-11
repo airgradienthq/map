@@ -8,7 +8,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 import {BottomSheetLocationComponent} from "../ui-components/bottom-sheet-location.component";
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {Location} from "@angular/common";
-import {environment} from "../../../environments/environment";
+import {environment} from "../../../environments/environment.sample";
 import {UsAQIServices} from "../../services/usAQI.services";
 import {HttpClient} from "@angular/common/http";
 
