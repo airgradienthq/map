@@ -182,19 +182,20 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 	
 
 	async loadDataAG(){
-		await firstValueFrom(this.getAGRequest()).then((data: MapLocation[]) => {
-			this.agLocations = data;
-			this.agLocations.forEach( (location) => {
-				location.apiSource = 'ag';
-				if (location.publicLocationName == null) location.publicLocationName = "Public Name not set on Dashboard"
+		await firstValueFrom(this.getAGRequest())
+			.then((data: MapLocation[]) => {
+				this.agLocations = data;
+				this.agLocations.forEach( (location) => {
+					location.apiSource = 'ag';
+					if (location.publicLocationName == null) location.publicLocationName = "Public Name not set on Dashboard"
 
-					console.log("sss: "+location.publicLocationName)
-				location.pm02 = Math.round(location.pm02)
-				location.pi02 = Math.round(this.usAqiServices.getUSaqi25(location.pm02))
-				location.pm02_clr = this.colorServices.getPM25Color(location.pm02)
-				if (location.latitude && location.latitude && location.locationName) this.addAQMarker(location);
+						console.log("sss: "+location.publicLocationName)
+					location.pm02 = Math.round(location.pm02)
+					location.pi02 = Math.round(this.usAqiServices.getUSaqi25(location.pm02))
+					location.pm02_clr = this.colorServices.getPM25Color(location.pm02)
+					if (location.latitude && location.latitude && location.locationName) this.addAQMarker(location);
+				});
 			});
-		});
 	}
 
 	getAGRequest() {
