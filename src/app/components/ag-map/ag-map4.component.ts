@@ -14,64 +14,8 @@ import {HttpClient} from "@angular/common/http";
 
 @Component({
 	selector: 'agMap4',
-	styles: [`
-
-	  .header {
-		padding: 20px;
-	  }
-
-	  .headerText {
-		font-size: 24px;
-	  }
-
-	  .searchBox {
-		max-width: 240px;
-		width: 100%;
-		min-width: 200px;
-		margin: 10px 50px;
-		z-index: 10000;
-	  }
-
-
-	  #map {
-		position: absolute;
-		top: 0px;
-		bottom: 0;
-		width: 100%;
-	  }
-
-	  ::ng-deep .mat-bottom-sheet-container {
-		min-width: 60vw !important;
-	  }
-
-	  .map-wrap {
-		position: relative;
-		width: 100%;
-		height: calc(100vh - 77px); /* calculate height of the screen minus the heading */
-	  }
-
-	  .map {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-	  }
-
-	`],
-	template: `
-
-
-		<div>
-
-
-			<div class="map-wrap">
-				<div class="map" #map></div>
-			</div>
-
-
-		</div>
-
-
-	`
+	styleUrls: ['ag-map4.component.scss'],
+	templateUrl: 'ag-map4.component.html',
 })
 
 export class agMap4Component {
