@@ -152,7 +152,10 @@ export class BottomSheetLocationComponent {
 
 	ngOnInit(): void {
 		fetch('https://staging.openaq.org/v3/locations/'+this.dataServices.selectedLocation.locationId)
-			.then((response) => response.json())
+			.then((response) => {
+				console.log(response)
+				return response.json()
+			})
 			.then((quotesData) => {
         		console.log(quotesData.results[0].name)
 				this.dataServices.selectedLocation.publicLocationName = quotesData.results[0].name;

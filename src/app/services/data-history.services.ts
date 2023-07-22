@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ChartOptions} from "chart.js";
 import {ColorsServices} from "./colors.services";
 import {DataServices} from "./data.services";
-import {environment} from "../../environments/environment";
+import {environment} from "../../environments/environment.sample";
 import {AgChartPeriods} from "../models/airgradient/agChartPeriods";
 import {MapLocation} from "../models/airgradient/map-location";
 import {AgMeasures} from "../models/airgradient/agMeasures";
