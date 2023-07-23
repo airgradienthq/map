@@ -12,6 +12,7 @@ import {environment} from "../../../environments/environment.sample";
 import {UsAQIServices} from "../../services/usAQI.services";
 import {HttpClient} from "@angular/common/http";
 import { firstValueFrom } from 'rxjs';
+import {Environment} from "@angular/cli/lib/config/workspace-schema";
 
 @Component({
 	selector: 'agMap4',
@@ -68,11 +69,24 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		};
 
 
+
 		this.map = new Map({
 			container: this.mapContainer.nativeElement,
 			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
 			center: [initialState.lng, initialState.lat],
-			zoom: initialState.zoom
+			zoom: initialState.zoom,
+			transformRequest: (url, resourceType) => {
+				console.log("in transform: "+url)
+				if (resourceType === 'Tile' && url.indexOf('openaq.org') > -1) {
+					return {
+						 url: url,
+						 //headers: { 'X-API-Key': environment.openAqApiKey },
+						 //credentials: 'include'
+						// https://github.com/mapbox/mapbox-gl-js/issues/7365
+					};
+				}
+				return undefined
+			}
 		});
 
 		this.map.addControl(new NavigationControl({}), 'top-right');
@@ -117,15 +131,19 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			that.bottomSheet.open(BottomSheetLocationComponent);
 		});
 
-		
+
 
 		this.map.on("load", () => {
 			this.map.addSource("locations", {
 				type: "vector",
 				tiles: [
 					"https://staging.openaq.org/v3/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
-				]
+				],
+
 			});
+
+
+
 			this.map.addLayer({
 				id: "locations",
 				type: "circle",
