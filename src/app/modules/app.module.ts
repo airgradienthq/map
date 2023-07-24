@@ -26,7 +26,6 @@ import {NaritComponent} from "../components/ui-components/attributions/narit.com
 import {TcanComponent} from "../components/ui-components/attributions/tcan.component";
 import {SeenComponent} from "../components/ui-components/attributions/seen.component";
 import {UsAQIServices} from "../services/usAQI.services";
-import {NgxLeafletLocateModule} from "@runette/ngx-leaflet-locate";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {agMap4Component} from "../components/ag-map/ag-map4.component";
 
@@ -60,7 +59,6 @@ import {agMap4Component} from "../components/ag-map/ag-map4.component";
 		FlexLayoutModule,
 		ChartjsModule,
 		RouterModule,
-		NgxLeafletLocateModule
 	],
 	providers: [
 		ColorsServices,

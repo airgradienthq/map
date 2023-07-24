@@ -80,8 +80,8 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 				if (resourceType === 'Tile' && url.indexOf('openaq.org') > -1) {
 					return {
 						 url: url,
-						 //headers: { 'X-API-Key': environment.openAqApiKey },
-						 //credentials: 'include'
+						 // headers: { 'X-API-Key': environment.openAqApiKey },
+						 // credentials: 'include'
 						// https://github.com/mapbox/mapbox-gl-js/issues/7365
 					};
 				}
@@ -137,7 +137,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			this.map.addSource("locations", {
 				type: "vector",
 				tiles: [
-					"https://staging.openaq.org/v3/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
+					"https://api.openaq.org/v3/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
 				],
 
 			});
