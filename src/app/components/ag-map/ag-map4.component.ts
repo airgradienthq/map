@@ -1,5 +1,5 @@
 import {Component, ElementRef, NgZone, ViewChild, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
-import {Map, Marker, NavigationControl} from 'maplibre-gl';
+import {Map, Marker, NavigationControl, AttributionControl} from 'maplibre-gl';
 import {DataServices} from "../../services/data.services";
 import {DetectDeviceServices} from "../../services/detect-device.services";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -72,10 +72,16 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			container: this.mapContainer.nativeElement,
 			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
 			center: [initialState.lng, initialState.lat],
-			zoom: initialState.zoom
+			zoom: initialState.zoom, 
+			attributionControl: false,
 		});
 
-		this.map.addControl(new NavigationControl({}), 'top-right');
+		this.map.addControl(new NavigationControl({}), 'top-left');
+		this.map.addControl(new AttributionControl({
+			customAttribution: '<a href="https://www.openaq.org/" target="_blank">&copy; OpenAQ</a>',
+			compact: false, 
+
+			}));
 		
 		
 		this.map.on('mouseenter', 'locations', () => {
