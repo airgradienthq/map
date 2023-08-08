@@ -1,2 +1,5 @@
 src/environments/
 node_modules/
+/.angular
+/dist
+/.idea
