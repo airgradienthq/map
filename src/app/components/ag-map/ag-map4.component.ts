@@ -8,7 +8,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 import {BottomSheetLocationComponent} from "../ui-components/bottom-sheet-location.component";
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {Location} from "@angular/common";
-import {environment} from "../../../environments/environment.sample";
+import {environment} from "../../../environments/environment";
 import {UsAQIServices} from "../../services/usAQI.services";
 import {HttpClient} from "@angular/common/http";
 import { firstValueFrom } from 'rxjs';
@@ -129,7 +129,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			this.map.addSource("locations", {
 				type: "vector",
 				tiles: [
-					"https://staging.openaq.org/v3/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
+					environment.openAqApiRoot+"/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
 				]
 			});
 			this.map.addLayer({
@@ -205,7 +205,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 	}
 
 	getAGRequest() {
-		return this.http.get(environment.apiRoot+'/public/api/v1/world/locations/measures/current?token='+this.dataServices.token);
+		return this.http.get(environment.agApiRoot+'/public/api/v1/world/locations/measures/current?token='+this.dataServices.token);
 	}
 
 	addAQMarker(location: MapLocation) {

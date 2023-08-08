@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {ChartOptions} from "chart.js";
 import {ColorsServices} from "./colors.services";
 import {DataServices} from "./data.services";
-import {environment} from "../../environments/environment.sample";
+import {environment} from "../../environments/environment";
 import {AgChartPeriods} from "../models/airgradient/agChartPeriods";
 import {MapLocation} from "../models/airgradient/map-location";
 import {AgMeasures} from "../models/airgradient/agMeasures";
@@ -58,7 +58,7 @@ export class DataHistoryServices {
 
 	getHistoryRequestAG(location:number, period: AgChartPeriods) {
 
-		return this.http.get(environment.apiRoot+'/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.token);
+		return this.http.get(environment.agApiRoot+'/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.token);
 	}
 
 	getHistoryOaq(location: number, period: AgChartPeriods){
@@ -86,7 +86,7 @@ export class DataHistoryServices {
 		let dateTimeToString = moment(dateTimeTo).utc(); //2023-03-31T10:30:00
 		console.log("dateTimeToString:" + dateTimeToString);
 
-		return this.http.get('https://staging.openaq.org/v3/locations/'+location+'/measurements?period_name='+period.oAqBucket+'&parameters_id=1&date_from='+dateTimeFromString+'&date_to='+dateTimeToString+'&limit=1000&page=1');
+		return this.http.get(environment.openAqApiRoot+'/locations/'+location+'/measurements?period_name='+period.oAqBucket+'&parameters_id=1&date_from='+dateTimeFromString+'&date_to='+dateTimeToString+'&limit=1000&page=1');
   }
 
 
