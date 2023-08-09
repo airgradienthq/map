@@ -5,6 +5,7 @@ import {ColorsServices} from "../../services/colors.services";
 import {DataHistoryServices} from "../../services/data-history.services";
 import {AgChartPeriods} from "../../models/airgradient/agChartPeriods";
 import {animate, style, transition, trigger} from "@angular/animations";
+import {environment} from "../../../environments/environment";
 
 @Component({
 	selector: 'bottom-sheet-location',
@@ -151,7 +152,7 @@ export class BottomSheetLocationComponent {
 	}
 
 	ngOnInit(): void {
-		fetch('https://staging.openaq.org/v3/locations/'+this.dataServices.selectedLocation.locationId)
+		fetch(environment.openAqApiRoot+'/locations/'+this.dataServices.selectedLocation.locationId)
 			.then((response) => {
 				console.log(response)
 				return response.json()
