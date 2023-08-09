@@ -9,7 +9,7 @@ import {MapLocation} from "../models/airgradient/map-location";
 import {AgMeasures} from "../models/airgradient/agMeasures";
 import {UsAQIServices} from "./usAQI.services";
 import {openAQhistoryResults} from "../models/openAQ/oAQHistoryV3";
-import * as moment from 'moment';
+import {DateTime, Duration} from "luxon";
 
 @Injectable()
 export class DataHistoryServices {
@@ -30,12 +30,12 @@ export class DataHistoryServices {
 
 	  this.chartPeriods = [
 		  // new AgChartPeriods('Last 8 hours (15 min)', '15m', '8h','hour', false, false),
-		  new AgChartPeriods('Last 48 hours (1 hour)', '1h', '48h','hour', false, false,null, 'hour', 'hours', 48),
-		  new AgChartPeriods('Last Week (1 hour)', '1h', '7d','hour', false, false, null,'hour','days', 7),
-		  new AgChartPeriods('Last 30 days (1 hour)', '1h', '30d','week', true, false, null, 'hour','days', 30),
-		  new AgChartPeriods('Last 90 days (1 day)', '1d', '90d','month', true, false, null, 'day','days', 90),
-		  new AgChartPeriods('Last 180 days (1 day)', '1d', '180d','month', true, false, null, 'day','days', 180),
-		  new AgChartPeriods('Last 360 days (1 day)', '1d', '360d','month', true, false, null, 'day','days', 360),
+		  new AgChartPeriods('Last 48 hours (1 hour)', '1h', '48h','hour', false, false,null, 'hour', Duration.fromObject({hours: 48})),
+		  new AgChartPeriods('Last Week (1 hour)', '1h', '7d','hour', false, false, null,'hour', Duration.fromObject({days: 7})),
+		  new AgChartPeriods('Last 30 days (1 hour)', '1h', '30d','week', true, false, null, 'hour', Duration.fromObject({days: 30})),
+		  new AgChartPeriods('Last 90 days (1 day)', '1d', '90d','month', true, false, null, 'day', Duration.fromObject({days: 90})),
+		  new AgChartPeriods('Last 180 days (1 day)', '1d', '180d','month', true, false, null, 'day', Duration.fromObject({days: 180})),
+		  new AgChartPeriods('Last 360 days (1 day)', '1d', '360d','month', true, false, null, 'day', Duration.fromObject({days: 360})),
 	  ];
   }
 
@@ -78,15 +78,19 @@ export class DataHistoryServices {
 	}
 
 	getHistoryRequestOpenAQ(location:number=228551, period: AgChartPeriods) {
-		let dateTimeTo = new Date()
+		const dateTo = DateTime.now();
+		const dateFrom = dateTo.minus(period.duration);
 
-		let dateTimeFromString = moment().subtract(period.momentBucketDeduct, period.momentBucket); //2023-02-01T10:30:00
-		console.log("dateTimeFromString:" + dateTimeFromString)
+		const params = new URLSearchParams({
+			period_name: period.oAqBucket,
+			parameters_id: '1',
+			date_from: dateFrom.toISO(),
+			date_to: dateTo.toISO(),
+			limit: '1000',
+			page: '1',
+		});
 
-		let dateTimeToString = moment(dateTimeTo).utc(); //2023-03-31T10:30:00
-		console.log("dateTimeToString:" + dateTimeToString);
-
-		return this.http.get(environment.openAqApiRoot+'/locations/'+location+'/measurements?period_name='+period.oAqBucket+'&parameters_id=1&date_from='+dateTimeFromString+'&date_to='+dateTimeToString+'&limit=1000&page=1');
+		return this.http.get(environment.openAqApiRoot+'/locations/'+location+'/measurements?'+params.toString());
   }
 
 
