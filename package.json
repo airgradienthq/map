@@ -23,7 +23,6 @@
     "@angular/router": "^15.0.0",
     "@ctrl/ngx-chartjs": "^4.0.2",
     "@ng-select/ng-select": "^10.0.4",
-    "@runette/ngx-leaflet-locate": "^2.0.6",
     "bootstrap": "^4.6.1",
     "chart.js": "^2.9.4",
     "copyfiles": "^2.4.1",
