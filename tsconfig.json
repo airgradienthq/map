@@ -12,11 +12,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
-    "paths": {
-      "ngx-leaflet": [
-        "dist/ngx-leaflet"
-      ]
-    },
+    "paths": {},
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
