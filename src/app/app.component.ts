@@ -14,7 +14,7 @@ import {BottomSheetParametersComponent} from "./components/ui-components/layout/
 
 	  .containerx {
 		width: 100%;
-		height: calc(100% - 0px);
+		height: 100%;
 		border: 1px solid rgba(0, 0, 0, 0.5);
 	  }
 
