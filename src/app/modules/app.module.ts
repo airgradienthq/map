@@ -28,6 +28,7 @@ import {SeenComponent} from "../components/ui-components/attributions/seen.compo
 import {UsAQIServices} from "../services/usAQI.services";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {agMap4Component} from "../components/ag-map/ag-map4.component";
+import {ConfigModule} from "./config.module";
 
 @NgModule({
 	declarations: [
@@ -58,6 +59,7 @@ import {agMap4Component} from "../components/ag-map/ag-map4.component";
 		FlexLayoutModule,
 		ChartjsModule,
 		RouterModule,
+		ConfigModule,
 	],
 	providers: [
 		ColorsServices,
