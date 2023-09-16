@@ -66,7 +66,7 @@ import {environment} from "../../../environments/environment";
 				<div fxLayoutAlign="center center" fxLayout="column" style="height: 100%; padding: 10px 30px" [style.color]="this.colorServices.getTextColor(this.dataServices.selectedLocation[this.dataServices.currentPara.color])"
 						 [style.background-color]="this.dataServices.selectedLocation[this.dataServices.currentPara.color]"
 						 class="aq-button">
-					<div style="font-size: 36px;  margin-top: 10px">{{this.dataServices.selectedLocation[this.dataServices.currentPara.value]}}</div>
+					<div style="font-size: 36px;  margin-top: 10px">{{this.dataServices.selectedLocation[this.dataServices.currentPara.value] | number : '1.0-0'}}</div>
 
 
 					<div style="font-size: 12px; margin-top: 10px">{{this.dataServices.currentPara.name}}<br>current</div>

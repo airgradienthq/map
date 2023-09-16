@@ -58,7 +58,7 @@ export class DataHistoryServices {
 
 	getHistoryRequestAG(location:number, period: AgChartPeriods) {
 
-		return this.http.get(environment.agApiRoot+'/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.token);
+		return this.http.get('https://api.airgradient.com/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.AGtoken);
 	}
 
 	getHistoryOaq(location: number, period: AgChartPeriods){

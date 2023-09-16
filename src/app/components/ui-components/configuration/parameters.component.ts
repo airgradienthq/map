@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {DataServices} from "../../../services/data.services";
+import {MessageService} from "../../../services/message.service";
 
 @Component({
 	selector: 'parameters',
@@ -42,6 +43,11 @@ import {DataServices} from "../../../services/data.services";
 <!--				</div>-->
 
 <!--			</div>-->
+			
+							<div fxLayout="column">
+								<mat-checkbox [(ngModel)]="this.dataServices.showOpenAQLocations" (ngModelChange)="openAQLayer()">Show OpenAQ Monitors</mat-checkbox>
+									
+				</div>
 
 
 			<div fxLayoutAlign="center space-around" fxLayout="row wrap">
@@ -67,9 +73,10 @@ export class ParametersComponent {
 
 	public tempMetric="C";
 	public pmMetric="ug";
+	public openAQ:boolean=false;
 
 
-	constructor(public dataServices: DataServices) {
+	constructor(public dataServices: DataServices, private _messageService: MessageService) {
 	}
 
 	public setConfiguration(par){
@@ -77,6 +84,10 @@ export class ParametersComponent {
 		localStorage.setItem('para', par.value);
 	}
 
+	openAQLayer(){
+
+		this._messageService.sendMessage('openAQLayerOn');
+	}
 
 
 }

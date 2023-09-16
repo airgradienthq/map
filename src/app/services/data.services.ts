@@ -1,5 +1,7 @@
 import {MapLocation} from "../models/airgradient/map-location";
 import {Injectable, NgZone} from "@angular/core";
+import {ColorsServices} from "./colors.services";
+import {HttpClient} from "@angular/common/http";
 
 
 @Injectable()
@@ -24,8 +26,11 @@ export class DataServices {
 
 	currentPara = this.para[0];
 	selectedLocation: MapLocation;
-	token:string;
+	AGtoken:string;
 	currentOrgId: String = "ag";
+	location: MapLocation[];
+	showOpenAQLocations:boolean=false;
+
 
 
 	// oldy:number;
@@ -35,15 +40,11 @@ export class DataServices {
 	// currentLatitide:number;
 	// currentZoom:number;
 
-  constructor() {
+  constructor(private http: HttpClient,private colorServices: ColorsServices,) {
   }
 
 
 
-
-	addAQMarker(location: MapLocation) {
-
-	}
 
 	moveBack(){
 		//this.airmap.panBy(new Point(- this.oldx, - ( this.oldy -60 )));

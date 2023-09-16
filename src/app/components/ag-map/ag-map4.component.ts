@@ -12,6 +12,7 @@ import {environment} from "../../../environments/environment";
 import {UsAQIServices} from "../../services/usAQI.services";
 import {HttpClient} from "@angular/common/http";
 import { firstValueFrom } from 'rxjs';
+import {MessageService} from "../../services/message.service";
 
 @Component({
 	selector: 'agMap4',
@@ -21,11 +22,12 @@ import { firstValueFrom } from 'rxjs';
 
 export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 
-	private currentLongitude:number;
-	private currentLatitide:number;
-	private currentZoom:number;
+	private currentLongitude:number = 0;
+	private currentLatitide:number = 0;
+	private currentZoom:number = 1;
 	private currentOrgId: String = "ag";
 	private agLocations: MapLocation[];
+	private showOaqLayer: boolean = false;
 
 	// public selectedLocation: any = [];
 	autocompleteLocations: any;
@@ -37,6 +39,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 
 	constructor(private Activatedroute: ActivatedRoute,
 				private dataServices: DataServices,
+				private _messageService: MessageService,
 				private usAqiServices: UsAQIServices,
 				private colorServices: ColorsServices,
 				public bottomSheet: MatBottomSheet,
@@ -44,46 +47,73 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 				private http: HttpClient,
 				private ColorService: ColorsServices,
 				public detectDevice: DetectDeviceServices) {
+
+		 this._messageService.listenMessage().subscribe((m: String) => {
+      if (m == 'openAQLayerOn') {
+        this.showOaqLayer = this.dataServices.showOpenAQLocations;
+		this.showOaqLayer = this.dataServices.showOpenAQLocations;
+		this.createMap();
+      }
+
+    });
+
 	}
 
-	ngOnInit() {	}
+	ngOnInit() {
+
+	}
 
 	ngAfterViewInit() {
-		let params = this.Activatedroute.snapshot.queryParamMap;
-		console.log("dataServices.loadData 2");
-		this.currentZoom = +params.get('zoom') || 1;
-		this.currentLatitide = +params.get('lat') || 0;
-		this.currentLongitude = +params.get('long') || 0;
-		let token = params.get('token');
-		if (token != null) {
-			this.dataServices.token = token;
-			console.log("tkkk: " + this.dataServices.token)
-		}
+		this.Activatedroute.queryParamMap
+			.subscribe(params => {
+				this.dataServices.currentOrgId = params.get('org')||"ag";
+				console.log("org2: "+params.get('org')||"ag")
+				if(this.dataServices.currentOrgId!=null){
+					let params = this.Activatedroute.snapshot.queryParamMap;
+					console.log("dataServices.loadData 2");
+					this.currentZoom = +params.get('zoom') || 1;
+					this.currentLatitide = +params.get('lat') || 0;
+					this.currentLongitude = +params.get('long') || 0;
+					console.log("params.get('showOaqLayer'): xx ")
+					console.log("params.get('showOaqLayer'): " +this.Activatedroute.queryParams['zoom'])
+					if (params.get('showOaqLayer')=='true'){
+						this.showOaqLayer = true
+					} else {
+						this.showOaqLayer = false
+					}
+					this.dataServices.showOpenAQLocations = this.showOaqLayer;
+					let AGtoken = params.get('AGtoken');
+					if (AGtoken != null) {
+						this.dataServices.AGtoken = AGtoken;
+						console.log("tkkk: " + this.dataServices.AGtoken)
+					}
+					this.createMap();
+				}
+			});
+	}
 
-
+	createMap() {
 		const initialState = {
 			lng: this.currentLongitude,
 			lat: this.currentLatitide,
 			zoom: this.currentZoom
 		};
 
-
 		this.map = new Map({
 			container: this.mapContainer.nativeElement,
 			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
 			center: [initialState.lng, initialState.lat],
-			zoom: initialState.zoom, 
+			zoom: initialState.zoom,
 			attributionControl: false,
 		});
 
 		this.map.addControl(new NavigationControl({}), 'top-left');
 		this.map.addControl(new AttributionControl({
 			customAttribution: '<a href="https://www.openaq.org/" target="_blank">&copy; OpenAQ</a>',
-			compact: false, 
-
+			compact: false,
 			}));
-		
-		
+
+
 		this.map.on('mouseenter', 'locations', () => {
 			console.log("ss")
 			this.map.getCanvas().style.cursor = 'pointer'
@@ -104,8 +134,9 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
 			let long = Math.round(that.map.getCenter().lng * 1000) / 1000
 			let org = that.currentOrgId;
-			let token = that.dataServices.token
-			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org + '&token=' + token;
+			let token = that.dataServices.AGtoken
+			let OaqLayer = that.showOaqLayer
+			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org + '&AGtoken=' + token + '&showOaqLayer='+ OaqLayer;
 
 			that.location.replaceState("", queryString);
 		});
@@ -123,9 +154,9 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			that.bottomSheet.open(BottomSheetLocationComponent);
 		});
 
-		
-
-		this.map.on("load", () => {
+		console.log("this.showOaqLayer: "+this.showOaqLayer)
+if (this.showOaqLayer) {
+	this.map.on("load", () => {
 			this.map.addSource("locations", {
 				type: "vector",
 				tiles: [
@@ -156,23 +187,8 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 				},
 			});
 		});
-
-
-		this.Activatedroute.queryParamMap
-			.subscribe(params => {
-				console.log("dataServices.loadData 2");
-				this.currentZoom = +params.get('zoom') || 1;
-				this.currentLatitide = +params.get('lat') || 0;
-				this.currentLongitude = +params.get('long') || 0;
-				let token = params.get('token');
-				this.dataServices.token = token;
-				//this.loadDataAG();
-				//this.dataServices.loadDataOaq();
-
-			});
-		
+		}
 		this.loadDataAG();
-
 	}
 
 	ngOnDestroy() {
@@ -205,7 +221,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 	}
 
 	getAGRequest() {
-		return this.http.get(environment.agApiRoot+'/public/api/v1/world/locations/measures/current?token='+this.dataServices.token);
+		return this.http.get('https://api.airgradient.com/public/api/v1/world/locations/measures/current?token='+ this.dataServices.AGtoken);
 	}
 
 	addAQMarker(location: MapLocation) {

@@ -15,6 +15,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 		MatSnackBarModule,
 		MatProgressBarModule,
 		MatToolbarModule,
-		MatSnackBarModule
+		MatSnackBarModule,
+		MatCheckboxModule
 	],
 	exports: [
 		MatSidenavModule,
@@ -57,7 +59,8 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 		MatSnackBarModule,
 		MatProgressBarModule,
 		MatToolbarModule,
-		MatSnackBarModule
+		MatSnackBarModule,
+		MatCheckboxModule
 	],
 	providers: [],
 	bootstrap: [  ]
