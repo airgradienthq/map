@@ -10,13 +10,14 @@ import {AgMeasures} from "../models/airgradient/agMeasures";
 import {UsAQIServices} from "./usAQI.services";
 import {openAQhistoryResults} from "../models/openAQ/oAQHistoryV3";
 import {DateTime, Duration} from "luxon";
+import {AgHistoryChartData} from "../models/airgradient/agHistoryChartData";
 
 @Injectable()
 export class DataHistoryServices {
-
 	historyData:any;
 	dataAvailable: boolean;
 	historyOaqTransformedData:AgMeasures[] = [];
+	historyAGTransformedData:AgMeasures[] = [];
 	measures: AgMeasures[];
 	chartdata;
 	optionsdata : ChartOptions = {};
@@ -39,7 +40,6 @@ export class DataHistoryServices {
 	  ];
   }
 
-
 	getHistory(location: MapLocation, period: AgChartPeriods) {
 		this.chartdata = null;
 		this.dataAvailable = true;
@@ -51,21 +51,27 @@ export class DataHistoryServices {
 	}
 
 	getHistoryAG(location: number, period: AgChartPeriods){
+	  this.historyAGTransformedData = [];
 		this.getHistoryRequestAG(location, period).subscribe((data: any) => {
-			this.prepareBarChartData(data, "pi02", 100);
+			data.forEach( (point: any) => {
+				var data2: AgMeasures = new AgMeasures("x", point.date, point.value, this.usAqiServices.getUSaqi25(point.value) );
+				this.historyAGTransformedData.push(data2);
+				console.log(data2)
+			});
+			this.prepareBarChartData(this.historyAGTransformedData,"pi02" ,100);
 		});
 	}
 
 	getHistoryRequestAG(location:number, period: AgChartPeriods) {
-
-		return this.http.get('https://api.airgradient.com/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.AGtoken);
+		return this.http.get(environment.agApiRoot+'/public/api/v1/world/locations/'+location+'/measures/past/buckets/5/pm02');
 	}
+
+	// 		return this.http.get('https://api-int.airgradient.com/public/api/v1/experimental/locations/'+location+'/history?bucket=15m&since='+period.since+'&measure='+ this.dataServices.currentPara.value + '&outdoor=true&duringPlaceOpenOnly=false&token='+this.dataServices.AGtoken);
+	// }
 
 	getHistoryOaq(location: number, period: AgChartPeriods){
 	  this.historyOaqTransformedData = [];
 		this.getHistoryRequestOpenAQ(location, period).subscribe((data: any) => {
-
-
 			data.results.forEach( (point: openAQhistoryResults) => {
 				var data2: AgMeasures = new AgMeasures("x", point.period.datetimeFrom.local, point.value, this.usAqiServices.getUSaqi25(point.value) );
 				this.historyOaqTransformedData.push(data2);
@@ -73,14 +79,13 @@ export class DataHistoryServices {
 			if (data.meta.found==0) {
 				console.log("no data")
 			}
-			this.prepareBarChartData(this.historyOaqTransformedData,"pi02" ,data.meta.found);
+			this.prepareBarChartData(this.historyOaqTransformedData,this.dataServices.currentPara.value ,data.meta.found);
 		});
 	}
 
 	getHistoryRequestOpenAQ(location:number=228551, period: AgChartPeriods) {
 		const dateTo = DateTime.now();
 		const dateFrom = dateTo.minus(period.duration);
-
 		const params = new URLSearchParams({
 			period_name: period.oAqBucket,
 			parameters_id: '1',
@@ -89,7 +94,6 @@ export class DataHistoryServices {
 			limit: '1000',
 			page: '1',
 		});
-
 		return this.http.get(environment.openAqApiRoot+'/locations/'+location+'/measurements?'+params.toString());
   }
 
@@ -98,58 +102,30 @@ export class DataHistoryServices {
 		let dates: any[]=[];
 		let values: number[]=[];
 		let colors: string[]=[];
-
 		if (found==0) {
 			this.dataAvailable = false;
 			return;
 		}
 
 		measure = this.dataServices.currentPara.value;
-
-		// if (measure=='pi02' && this.dataServices.selectedLocation.apiSource=='oaq'){
-		// 	measure='pm02'
-		// }
-
 		this.measures = data;
 		this.measures.sort(function(a, b) {
 			return  +new Date(a.date) - +new Date(b.date);
 		});
 		this.measures.forEach((meas) => {
-			// console.log(meas);
 			dates.push(meas.date);
-			// values.push(meas[measure]);
-			// colors.push(this.colors.getPM25Color(meas[measure]));
-
 			if ((meas[measure])==0 && (measure=="pm02" || measure=="pi02" || measure=="tvoc" )) {
 				values.push(0.4);
 			} else {
-				// if (measure=='pm02' && this.dataServices.selectedLocation.apiSource=='oaq') {
-				// 	values.push(this.usAqiServices.getUSaqi25(meas[measure]));
-				// } else {
-				// 	values.push(meas[measure]);
-				// }
 					values.push(meas[measure]);
-
-				if (this.dataServices.selectedLocation.apiSource=='ag'){
-					colors.push(this.colors.getColorOpen(meas[measure + "_clr"]));
-				} else {
-					colors.push(this.colors.getPM25Color(meas[measure]));
-				}
-
+					colors.push(this.colors.getPM25Color(meas['pm02']));
 			}
 			if (meas[measure]) this[measure + "_has"] = true;
 		});
 
-		//console.log(dates)
-
-		//console.log(values)
-
-
 		let axisLabel="";
 		if (measure=="pm02") axisLabel="PM2.5 in μg/m³";
 		if (measure=="pi02") axisLabel="PM2.5 in US AQI";
-		// if (measure=="rco2") axisLabel="CO2 in ppm";
-		// if (measure=="tvoc") axisLabel="TVOC (Ind30)";
 		if (measure=="rhum") axisLabel="Relative Humidity in %";
 
 
@@ -164,6 +140,12 @@ export class DataHistoryServices {
 				xAxes: [{
 					display: true,
 					type: 'time',
+					time: {
+						unit: 'day',
+						unitStepSize: 1,
+						displayFormats: {
+						   'day': 'MMM DD'
+						}}
 				}],
 				yAxes: [{
 					id: 'A',

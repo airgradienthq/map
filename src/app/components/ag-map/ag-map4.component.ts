@@ -50,9 +50,13 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 
 		 this._messageService.listenMessage().subscribe((m: String) => {
       if (m == 'openAQLayerOn') {
-        this.showOaqLayer = this.dataServices.showOpenAQLocations;
-		this.showOaqLayer = this.dataServices.showOpenAQLocations;
-		this.createMap();
+		  let params = this.Activatedroute.snapshot.queryParamMap;
+		  this.currentZoom = +params.get('zoom') || 1;
+		  this.currentLatitide = +params.get('lat') || 0;
+		  this.currentLongitude = +params.get('long') || 0;
+          this.showOaqLayer = this.dataServices.showOpenAQLocations;
+
+		  this.createMap();
       }
 
     });
@@ -74,19 +78,6 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
 					this.currentLongitude = +params.get('long') || 0;
-					console.log("params.get('showOaqLayer'): xx ")
-					console.log("params.get('showOaqLayer'): " +this.Activatedroute.queryParams['zoom'])
-					if (params.get('showOaqLayer')=='true'){
-						this.showOaqLayer = true
-					} else {
-						this.showOaqLayer = false
-					}
-					this.dataServices.showOpenAQLocations = this.showOaqLayer;
-					let AGtoken = params.get('AGtoken');
-					if (AGtoken != null) {
-						this.dataServices.AGtoken = AGtoken;
-						console.log("tkkk: " + this.dataServices.AGtoken)
-					}
 					this.createMap();
 				}
 			});
@@ -109,7 +100,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 
 		this.map.addControl(new NavigationControl({}), 'top-left');
 		this.map.addControl(new AttributionControl({
-			customAttribution: '<a href="https://www.openaq.org/" target="_blank">&copy; OpenAQ</a>',
+			customAttribution: '<a href="https://www.airgradient.com/" target="_blank">&copy; AirGradient</a> | <a href="https://www.openaq.org/" target="_blank">&copy; OpenAQ</a>',
 			compact: false,
 			}));
 
@@ -134,9 +125,9 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
 			let long = Math.round(that.map.getCenter().lng * 1000) / 1000
 			let org = that.currentOrgId;
-			let token = that.dataServices.AGtoken
-			let OaqLayer = that.showOaqLayer
-			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org + '&AGtoken=' + token + '&showOaqLayer='+ OaqLayer;
+			//let token = that.dataServices.AGtoken
+			//let OaqLayer = that.showOaqLayer
+			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org ;
 
 			that.location.replaceState("", queryString);
 		});
@@ -154,7 +145,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			that.bottomSheet.open(BottomSheetLocationComponent);
 		});
 
-		console.log("this.showOaqLayer: "+this.showOaqLayer)
+		//console.log("this.showOaqLayer: "+this.showOaqLayer)
 if (this.showOaqLayer) {
 	this.map.on("load", () => {
 			this.map.addSource("locations", {
@@ -201,8 +192,6 @@ if (this.showOaqLayer) {
 	}
 
 
-	
-
 	async loadDataAG(){
 		await firstValueFrom(this.getAGRequest())
 			.then((data: MapLocation[]) => {
@@ -210,8 +199,6 @@ if (this.showOaqLayer) {
 				this.agLocations.forEach( (location) => {
 					location.apiSource = 'ag';
 					if (location.publicLocationName == null) location.publicLocationName = "Public Name not set on Dashboard"
-
-						console.log("sss: "+location.publicLocationName)
 					location.pm02 = Math.round(location.pm02)
 					location.pi02 = Math.round(this.usAqiServices.getUSaqi25(location.pm02))
 					location.pm02_clr = this.colorServices.getPM25Color(location.pm02)
@@ -221,7 +208,7 @@ if (this.showOaqLayer) {
 	}
 
 	getAGRequest() {
-		return this.http.get('https://api.airgradient.com/public/api/v1/world/locations/measures/current?token='+ this.dataServices.AGtoken);
+		return this.http.get(environment.agApiRoot+'/public/api/v1/world/locations/measures/current');
 	}
 
 	addAQMarker(location: MapLocation) {
@@ -233,11 +220,8 @@ if (this.showOaqLayer) {
 		el.style.backgroundColor = location.pm02_clr;
 		el.addEventListener('click', function () {
 			var loc = new MapLocation()
-						loc.apiSource = "oaq";
-						loc.pm02 = location.pm02;
-						loc.locationId = location.locationId;
 						that.dataServices.selectedLocation = location;
-						that.bottomSheet.open(BottomSheetLocationComponent);
+						that.bottomSheet.open(BottomSheetLocationComponent , {data: { location: that.dataServices.selectedLocation }} );
 			console.log("clicked")
 		});
 

@@ -1,11 +1,12 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {DataServices} from "../../services/data.services";
-import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef} from "@angular/material/bottom-sheet";
 import {ColorsServices} from "../../services/colors.services";
 import {DataHistoryServices} from "../../services/data-history.services";
 import {AgChartPeriods} from "../../models/airgradient/agChartPeriods";
 import {animate, style, transition, trigger} from "@angular/animations";
 import {environment} from "../../../environments/environment";
+import {MapLocation} from "../../models/airgradient/map-location";
 
 @Component({
 	selector: 'bottom-sheet-location',
@@ -91,8 +92,8 @@ import {environment} from "../../../environments/environment";
 				<div >
 					<div fxFlex="column">
 						<div menu fxLayoutAlign="end end">
-						<button mat-button
-								[matMenuTriggerFor]="appMenu">{{this.historyDataServices?.currentPeriod?.name}}</button>
+<!--						<button mat-button-->
+<!--								[matMenuTriggerFor]="appMenu">{{this.historyDataServices?.currentPeriod?.name}}</button>-->
 						</div>
 
 
@@ -133,35 +134,20 @@ import {environment} from "../../../environments/environment";
 
 export class BottomSheetLocationComponent {
 
-	constructor(public dataServices: DataServices,
+	constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public location: MapLocation, public dataServices: DataServices,
 				public historyDataServices: DataHistoryServices,
 				public colorServices: ColorsServices,
 				private bottomSheetRef: MatBottomSheetRef<BottomSheetLocationComponent>) {
 		this.historyDataServices.getHistory(this.dataServices.selectedLocation, null);
-
-
 		bottomSheetRef.backdropClick().subscribe(() => {
 			dataServices.moveBack();
 		});
 	}
 
-
 	openLink(event: MouseEvent): void {
 		this.bottomSheetRef.dismiss();
 		event.preventDefault();
 	}
-
-	ngOnInit(): void {
-		fetch(environment.openAqApiRoot+'/locations/'+this.dataServices.selectedLocation.locationId)
-			.then((response) => {
-				console.log(response)
-				return response.json()
-			})
-			.then((quotesData) => {
-        		console.log(quotesData.results[0].name)
-				this.dataServices.selectedLocation.publicLocationName = quotesData.results[0].name;
-      });
-  }
 
 	showChart(period: AgChartPeriods) {
 		this.historyDataServices.getHistory(this.dataServices.selectedLocation, period);
