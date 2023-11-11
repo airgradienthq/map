@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DataServices} from "../../../services/data.services";
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
 
@@ -17,7 +17,7 @@ import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
 	`
 })
 
-export class BottomSheetParametersComponent {
+export class BottomSheetParametersComponent  {
 
 
 	constructor(public dataServices: DataServices, private _bottomSheetRef: MatBottomSheetRef<BottomSheetParametersComponent>) {

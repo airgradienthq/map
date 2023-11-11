@@ -5,6 +5,7 @@ export class MapLocation {
   publicPlaceName:string;
   publicPlaceUrl:string;
   locationId: number;
+  providerID: number;
   latitude: number;
   longitude: number;
   pm01: number;

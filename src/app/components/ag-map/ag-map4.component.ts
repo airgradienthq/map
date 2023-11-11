@@ -135,12 +135,15 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		this.map.on('click', 'locations', function (e) {
 			const features = e.target.queryRenderedFeatures(e.point);
 			const locationsId = features[0].properties['sensor_nodes_id'];
+			const providerID = features[0].properties['providers_id'];
 			console.log(features[0]);
 
 			var loc = new MapLocation()
 			loc.apiSource = "oaq";
+
 			loc.pm02 = features[0].properties['value'];
 			loc.locationId = locationsId;
+			loc.providerID = providerID;
 			that.dataServices.selectedLocation = loc;
 			that.bottomSheet.open(BottomSheetLocationComponent);
 		});
