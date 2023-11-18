@@ -91,7 +91,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					</div>
 					<div
 						*ngIf="this.dataServices.selectedLocation.apiSource=='oaq' && this.dataServices.selectedLocation.providerID==215">
-						Source: <a href="https://www2.purpleair.com/" target="_blank">Purple Air</a> (via OpenAQ)
+						Source: <a href="https://www2.purpleair.com/" target="_blank">PurpleAir</a> (via <a href="https://openaq.org/" target="_blank">OpenAQ</a>)
 					</div>
 					<!--				<div>{{ this.data | json }}</div>-->
 				</div>
