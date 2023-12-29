@@ -116,6 +116,7 @@ export class DataHistoryServices {
 			dates.push(meas.date);
 			if ((meas[measure])==0 && (measure=="pm02" || measure=="pi02" || measure=="tvoc" )) {
 				values.push(0.4);
+				colors.push(this.colors.getPM25Color(0.4));
 			} else {
 					values.push(meas[measure]);
 					colors.push(this.colors.getPM25Color(meas['pm02']));
@@ -184,7 +185,5 @@ export class DataHistoryServices {
 		};
 
 	}
-
-
 
 }
