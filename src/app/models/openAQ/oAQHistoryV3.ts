@@ -4,7 +4,6 @@ export class openAQHistory {
 	meta: meta;
 }
 
-
 export class openAQhistoryResults {
 	period: period;
 	value: number;
