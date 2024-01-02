@@ -63,8 +63,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 			</div>
 
 
-			<div fxFill fxLayout.gt-md="row" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start start"
-				 fxLayoutAlign.gt-md="space-between center">
+			<div fxLayoutGap="10px" fxLayoutAlign="space-between center">
 
 
 				<div fxLayoutAlign="center center" fxLayout="column" style="height: 100%; padding: 10px 30px"
