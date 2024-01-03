@@ -1,12 +1,16 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from '../app.component';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgSelectModule} from "@ng-select/ng-select";
 import {HttpClientModule} from "@angular/common/http";
 import {FlexLayoutModule} from "@angular/flex-layout";
-import {ColorsServices} from "../services/colors.services";
 import {FormsModule} from "@angular/forms";
-import {DataServices} from "../services/data.services";
 import {CommonModule} from "@angular/common";
+import {ChartjsModule} from "@ctrl/ngx-chartjs";
+import {RouterModule} from "@angular/router";
+
+import {AppComponent} from '../app.component';
+import {ColorsServices} from "../services/colors.services";
+import {DataServices} from "../services/data.services";
 import {MaterialModule} from "./material.module";
 import {DummyComponent} from "../components/ui-components/dummy.component";
 import {SideBarComponent} from "../components/ui-components/layout/side-bar.component";
@@ -17,18 +21,16 @@ import {BottomSheetLocationComponent} from "../components/ui-components/bottom-s
 import {MessageService} from "../services/message.service";
 import {DetectDeviceServices} from "../services/detect-device.services";
 import {ParametersComponent} from "../components/ui-components/configuration/parameters.component";
-import {ChartjsModule} from "@ctrl/ngx-chartjs";
 import {DataHistoryServices} from "../services/data-history.services";
-import {RouterModule, Routes} from "@angular/router";
 import {CapComponent} from "../components/ui-components/attributions/cap.component";
 import {AgComponent} from "../components/ui-components/attributions/ag.component";
 import {NaritComponent} from "../components/ui-components/attributions/narit.component";
 import {TcanComponent} from "../components/ui-components/attributions/tcan.component";
 import {SeenComponent} from "../components/ui-components/attributions/seen.component";
 import {UsAQIServices} from "../services/usAQI.services";
-import {NgSelectModule} from "@ng-select/ng-select";
 import {agMap4Component} from "../components/ag-map/ag-map4.component";
 import {ConfigModule} from "./config.module";
+import {DateAgoPipe} from '../services/date-ago.pipe';
 
 @NgModule({
 	declarations: [
@@ -44,7 +46,8 @@ import {ConfigModule} from "./config.module";
 		AgComponent,
 		NaritComponent,
 		TcanComponent,
-		SeenComponent
+		SeenComponent,
+		DateAgoPipe
 	],
 	imports: [
 		MaterialModule,

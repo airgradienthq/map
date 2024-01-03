@@ -6,7 +6,7 @@ export class UsAQIServices {
 	constructor() {
 	}
 
-	getUSaqi25(pm02: number) {
+	getUSaqi25(pm02: number): number {
 		  if (pm02 <= 12.0) return ((50 - 0) / (12.0 - .0) * (pm02 - .0) + 0);
 		  else if (pm02 <= 35.4) return ((100 - 50) / (35.4 - 12.0) * (pm02 - 12.0) + 50);
 		  else if (pm02 <= 55.4) return ((150 - 100) / (55.4 - 35.4) * (pm02 - 35.4) + 100);

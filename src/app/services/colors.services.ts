@@ -6,15 +6,15 @@ export class ColorsServices {
 	constructor() {
 	}
 
-	getColorClosed(color: string) {
+	getColorClosed(color: string): string {
 		return this.getBGColor(color) + "66";
 	}
 
-	getColorOpen(color: string) {
+	getColorOpen(color: string): string {
 		return this.getBGColor(color) + "bf";
 	}
 
-	getTextColor(color: string) {
+	getTextColor(color: string): string {
 		let ret: string;
 		switch (color) {
 			case "green":
@@ -39,7 +39,7 @@ export class ColorsServices {
 		return ret
 	}
 
-	getPM25Color(pmValue: number){
+	getPM25Color(pmValue: number): string {
 		let ret: string = '#7f01e2';
 		if (pmValue<=12){
 			ret = "green"
@@ -63,7 +63,7 @@ export class ColorsServices {
 		return this.getBGColor(ret)
 	}
 
-	getBGColor(color: string) {
+	getBGColor(color: string): string {
 		let ret: string;
 		switch (color) {
 			case "green": {
@@ -106,7 +106,7 @@ export class ColorsServices {
 		return ret
 	}
 
-	getHeat(T: number, RH: number) {
+	getHeat(T: number, RH: number): number {
 		// https://en.wikipedia.org/wiki/Heat_index#Formula
 		return Math.round((-8.78469475556 + 1.61139411 * T + 2.33854883889 * RH - 0.14611605 * T * RH - 0.012308094 * T * T - 0.0164248277778 * RH * RH + 0.002211732 * T * T * RH + 0.00072546 * T * RH * RH - 0.000003582 * T * T * RH * RH) * 10) / 10;
 	}

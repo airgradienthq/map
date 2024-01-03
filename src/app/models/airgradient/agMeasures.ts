@@ -60,21 +60,18 @@ export class AgMeasures {
   heat_index_celsius: number;
   heat_index_fahrenheit: number;
   heatindex_clr: string;
-
   averaged_records: number;
 
-
-
   constructor(name:string, date: any, pm02: number, pi02: number) {
-    this.pm02=pm02;
-	this.date=date;
-	this.name=name;
-    this.pi02=pi02;
-    this.rco2=0;
-    this.rhum=0;
-    this.atmp=0;
-    this.fan=0;
-    this.tacho=0;
+    this.pm02 = pm02;
+	this.date = date;
+	this.name = name;
+    this.pi02 = pi02;
+    this.rco2 = 0;
+    this.rhum = 0;
+    this.atmp = 0;
+    this.fan = 0;
+    this.tacho = 0;
   }
 
 }

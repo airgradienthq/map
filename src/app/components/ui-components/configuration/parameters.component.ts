@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+
 import {DataServices} from "../../../services/data.services";
 import {MessageService} from "../../../services/message.service";
 
@@ -23,7 +24,8 @@ import {MessageService} from "../../../services/message.service";
 		<div class="widgetcontainer" fxLayoutAlign="center center" fxLayout="column" fxLayoutGap="30px">
 			<div class="subheader" style="text-align: center" fxFill>Select Air Quality Parameter</div>
 
-
+			<!-- Parameters logic can be further extended to include temperature and other params-->
+			
 <!--			<div fxLayout="column" fxLayout.gt-md="row" fxLayoutAlign="center space-around" fxLayoutGap="30px">-->
 
 <!--				<div fxLayout="column">-->
@@ -43,11 +45,12 @@ import {MessageService} from "../../../services/message.service";
 <!--				</div>-->
 
 <!--			</div>-->
-			
-							<div fxLayout="column">
-								<mat-checkbox [(ngModel)]="this.dataServices.showOpenAQLocations" (ngModelChange)="openAQLayer()">Show OpenAQ Monitors</mat-checkbox>
-									
-				</div>
+
+			<div fxLayout="column">
+				<mat-checkbox [(ngModel)]="this.dataServices.showOpenAQLocations" (ngModelChange)="openAQLayer()">
+					Show OpenAQ Monitors
+				</mat-checkbox>
+			</div>
 
 
 			<div fxLayoutAlign="center space-around" fxLayout="row wrap">
@@ -75,17 +78,15 @@ export class ParametersComponent {
 	public pmMetric="ug";
 	public openAQ:boolean=false;
 
-
 	constructor(public dataServices: DataServices, private _messageService: MessageService) {
 	}
 
-	public setConfiguration(par){
-		this.dataServices.currentPara=par;
+	public setConfiguration(par): void {
+		this.dataServices.currentPara = par;
 		localStorage.setItem('para', par.value);
 	}
 
-	openAQLayer(){
-
+	openAQLayer(): void {
 		this._messageService.sendMessage('openAQLayerOn');
 	}
 
