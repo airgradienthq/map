@@ -1,5 +1,4 @@
 export class MapLocation {
-  //locations: Locations;
   locationName: string;
   publicLocationName: string;
   publicPlaceName:string;

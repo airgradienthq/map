@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import {DataServices} from "../../../services/data.services";
 import {ActivatedRoute} from "@angular/router";
+
+import {DataServices} from "../../../services/data.services";
 
 @Component({
 	selector: 'side-bar',
@@ -32,18 +33,13 @@ export class SideBarComponent {
 
 
 	constructor(public dataServices: DataServices,
-				private Activatedroute:ActivatedRoute,) {
+				private Activatedroute:ActivatedRoute) {
 
 		this.Activatedroute.queryParamMap
 			.subscribe(params => {
 				this.dataServices.currentOrgId = params.get('org')||"ag";
 			});
-
 	}
-
-
-
-
 
 }
 

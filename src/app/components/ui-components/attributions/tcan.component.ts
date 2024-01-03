@@ -30,24 +30,12 @@ import { Component } from '@angular/core';
 			<div style="width: 100%; text-align: center">
 			<a target="_blank" href="https://www.airgradient.com/open-airgradient/outdoor/"><img class="img-fluid" style="padding:0px; max-width: 300px;" src="https://www.airgradient.com/images/outdoor/outdoor1.png" alt=""></a>
 			</div>
-
-
-
+			
 		</div>
-
-
-
+		
 	`
 })
 
-export class TcanComponent {
-
-
-	constructor() {
-	}
-
-
-
-}
+export class TcanComponent {}
 
 
