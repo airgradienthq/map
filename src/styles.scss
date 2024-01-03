@@ -44,4 +44,26 @@ $darkblue: #3d5a80;
   margin: 20px;
 }
 
+.mapboxgl-ctrl-geocoder--result-icon, maplibre-ctrl-geocoder--result-icon {
+  display: none !important;
+}
 
+.mapboxgl-ctrl-top-right, .maplibregl-ctrl-top-right {
+  right: 60px !important;
+}
+
+.mapboxgl-ctrl-geocoder--result-title,
+.maplibregl-ctrl-geocoder--result-title {
+  font-weight: 700;
+}
+
+.maplibregl-ctrl-geocoder .suggestions > li > a {
+  border-bottom: 1px solid #c9c6c6;
+  padding-bottom: 10px;
+}
+
+.maplibregl-ctrl-geocoder--input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #0000001a;
+  border-radius: 5px;
+}

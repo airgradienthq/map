@@ -56,16 +56,17 @@ import {BottomSheetParametersComponent} from "./components/ui-components/layout/
 
 	  .menuButton {
 		position: absolute;
-		top: 10px;
+		top: 12px;
 		right: 10px;
 		z-index: 1100;
 		color: black;
 		background-color: white;
 		padding: 5px;
-		border: black 1px solid;
+		//border: black 1px solid;
 		border-radius: 2px;
 		cursor: pointer;
 		text-align: center;
+		box-shadow: 0 0 10px 2px rgb(0 0 0 / 30%);
 	  }
 
   `],

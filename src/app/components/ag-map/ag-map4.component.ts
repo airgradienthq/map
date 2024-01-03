@@ -1,5 +1,6 @@
 import {Component, ElementRef, NgZone, ViewChild, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
 import {Map, Marker, NavigationControl, AttributionControl} from 'maplibre-gl';
+import * as mm from 'maplibre-gl';
 import {DataServices} from "../../services/data.services";
 import {DetectDeviceServices} from "../../services/detect-device.services";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -13,6 +14,7 @@ import {UsAQIServices} from "../../services/usAQI.services";
 import {HttpClient} from "@angular/common/http";
 import { firstValueFrom } from 'rxjs';
 import {MessageService} from "../../services/message.service";
+import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 @Component({
 	selector: 'agMap4',
@@ -28,6 +30,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 	private currentOrgId: String = "ag";
 	private agLocations: MapLocation[];
 	private showOaqLayer: boolean = false;
+	private geocoderControl: MaplibreGeocoder;
 
 	// public selectedLocation: any = [];
 	autocompleteLocations: any;
@@ -51,11 +54,10 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		 this._messageService.listenMessage().subscribe((m: String) => {
       if (m == 'openAQLayerOn') {
 		  let params = this.Activatedroute.snapshot.queryParamMap;
-		  this.currentZoom = +params.get('zoom') || 1;
-		  this.currentLatitide = +params.get('lat') || 0;
-		  this.currentLongitude = +params.get('long') || 0;
+		  // this.currentZoom = +params.get('zoom') || 1;
+		  // this.currentLatitide = +params.get('lat') || 0;
+		  // this.currentLongitude = +params.get('long') || 0;
           this.showOaqLayer = this.dataServices.showOpenAQLocations;
-
 		  this.createMap();
       }
 
@@ -90,6 +92,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			zoom: this.currentZoom
 		};
 
+		console.log(initialState, 999)
 		this.map = new Map({
 			container: this.mapContainer.nativeElement,
 			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
@@ -104,7 +107,6 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			compact: false,
 			}));
 
-
 		this.map.on('mouseenter', 'locations', () => {
 			console.log("ss")
 			this.map.getCanvas().style.cursor = 'pointer'
@@ -116,14 +118,18 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		})
 
 		let that = this;
-		this.map.on('moveend', function () {
-			console.log('Zoom. ' + Math.round(that.map.getZoom()));
+		this.map.on('moveend', () => {
+			console.log('ghghZoom. ' + Math.round(that.map.getZoom()));
 			console.log('Lat. ' + Math.round(that.map.getCenter().lat * 1000) / 1000);
 			console.log('Long. ' + Math.round(that.map.getCenter().lng * 1000) / 1000);
 
 			let zoom = Math.round(that.map.getZoom());
 			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
-			let long = Math.round(that.map.getCenter().lng * 1000) / 1000
+			let long = Math.round(that.map.getCenter().lng * 1000) / 1000;
+
+			this.currentZoom = zoom;
+			this.currentLatitide = lat;
+			this.currentLongitude = long;
 			let org = that.currentOrgId;
 			//let token = that.dataServices.AGtoken
 			//let OaqLayer = that.showOaqLayer
@@ -136,7 +142,7 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			const features = e.target.queryRenderedFeatures(e.point);
 			const locationsId = features[0].properties['sensor_nodes_id'];
 			const providerID = features[0].properties['providers_id'];
-			console.log(features[0]);
+			// console.log(features[0]);
 
 			var loc = new MapLocation()
 			loc.apiSource = "oaq";
@@ -149,40 +155,98 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		});
 
 		//console.log("this.showOaqLayer: "+this.showOaqLayer)
-if (this.showOaqLayer) {
-	this.map.on("load", () => {
-			this.map.addSource("locations", {
-				type: "vector",
-				tiles: [
-					environment.openAqApiRoot+"/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
-				]
-			});
-			this.map.addLayer({
-				id: "locations",
-				type: "circle",
-				source: "locations",
-				"source-layer": "default",
-				"paint": {
-					"circle-radius": 12,
-					"circle-color": ["step",
-						['get', 'value'],
-						this.ColorService.getPM25Color(10),
-						12,
-						this.ColorService.getPM25Color(35),
-						35.4,
-						this.ColorService.getPM25Color(50),
-						55.4,
-						this.ColorService.getPM25Color(100),
-						150.4,
-						this.ColorService.getPM25Color(180),
-						250.4,
-						this.ColorService.getPM25Color(300)
+		if (this.showOaqLayer) {
+			this.map.on("load", () => {
+				this.map.addSource("locations", {
+					type: "vector",
+					tiles: [
+						environment.openAqApiRoot+"/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
 					]
-				},
+				});
+				this.map.addLayer({
+					id: "locations",
+					type: "circle",
+					source: "locations",
+					"source-layer": "default",
+					"paint": {
+						"circle-radius": 12,
+						"circle-color": ["step",
+							['get', 'value'],
+							this.ColorService.getPM25Color(10),
+							12,
+							this.ColorService.getPM25Color(35),
+							35.4,
+							this.ColorService.getPM25Color(50),
+							55.4,
+							this.ColorService.getPM25Color(100),
+							150.4,
+							this.ColorService.getPM25Color(180),
+							250.4,
+							this.ColorService.getPM25Color(300)
+						]
+					},
+				});
 			});
-		});
+
 		}
-		this.loadDataAG();
+		if (this.geocoderControl) {
+			this.map.removeControl(this.geocoderControl);
+		}
+
+		this.addControl();
+
+	}
+
+	private addControl(): void {
+		const geocoderApi = {
+			forwardGeocode: async (config) => {
+				const features = [];
+				try {
+					const request =
+						`https://nominatim.openstreetmap.org/search?q=${
+							config.query
+						}&format=geojson&polygon_geojson=1&addressdetails=1`;
+					const response = await fetch(request);
+					const geojson = await response.json();
+					for (const feature of geojson.features) {
+						const center = [
+							feature.bbox[0] +
+							(feature.bbox[2] - feature.bbox[0]) / 2,
+							feature.bbox[1] +
+							(feature.bbox[3] - feature.bbox[1]) / 2
+						];
+						const point = {
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: center
+							},
+							place_name: feature.properties.display_name,
+							properties: feature.properties,
+							text: feature.properties.display_name,
+							place_type: ['place'],
+							center
+						};
+						features.push(point);
+					}
+				} catch (e) {
+					console.error(`Failed to forwardGeocode with error: ${e}`);
+				}
+				return {
+					features
+				};
+			}
+		};
+
+		this.geocoderControl = new MaplibreGeocoder(geocoderApi, {
+			showResultsWhileTyping: true,
+			zoom: 10,
+			debounceSearch: 200,
+			maplibregl: mm
+		});
+		this.map.addControl(this.geocoderControl);
+		this.geocoderControl.on('result', ()=> {console.log(56456455)})
+		console.log(this.map)
 	}
 
 	ngOnDestroy() {
