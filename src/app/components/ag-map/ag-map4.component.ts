@@ -1,20 +1,20 @@
-import {Component, ElementRef, NgZone, ViewChild, OnInit, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ElementRef, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
 import {Map, Marker, NavigationControl, AttributionControl} from 'maplibre-gl';
-import * as mm from 'maplibre-gl';
+import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
+import * as maplibre from 'maplibre-gl';
+import {firstValueFrom, Observable, Subject, takeUntil} from 'rxjs';
+import {HttpClient} from "@angular/common/http";
+import {Location} from "@angular/common";
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import {ActivatedRoute} from "@angular/router";
+
 import {DataServices} from "../../services/data.services";
-import {DetectDeviceServices} from "../../services/detect-device.services";
-import {ActivatedRoute, Router} from "@angular/router";
 import {ColorsServices} from "../../services/colors.services";
 import {MapLocation} from "../../models/airgradient/map-location";
 import {BottomSheetLocationComponent} from "../ui-components/bottom-sheet-location.component";
-import {MatBottomSheet} from "@angular/material/bottom-sheet";
-import {Location} from "@angular/common";
 import {environment} from "../../../environments/environment";
 import {UsAQIServices} from "../../services/usAQI.services";
-import {HttpClient} from "@angular/common/http";
-import { firstValueFrom } from 'rxjs';
 import {MessageService} from "../../services/message.service";
-import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 @Component({
 	selector: 'agMap4',
@@ -22,7 +22,7 @@ import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 	templateUrl: 'ag-map4.component.html',
 })
 
-export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
+export class agMap4Component implements AfterViewInit, OnDestroy {
 
 	private currentLongitude:number = 0;
 	private currentLatitide:number = 0;
@@ -31,12 +31,9 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 	private agLocations: MapLocation[];
 	private showOaqLayer: boolean = false;
 	private geocoderControl: MaplibreGeocoder;
-
-	// public selectedLocation: any = [];
-	autocompleteLocations: any;
-
+	private destroy$: Subject<void> = new Subject();
 	map: Map | undefined;
-	 
+
 	@ViewChild('map')
 	private mapContainer!: ElementRef<HTMLElement>;
 
@@ -48,35 +45,26 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 				public bottomSheet: MatBottomSheet,
 				private location: Location,
 				private http: HttpClient,
-				private ColorService: ColorsServices,
-				public detectDevice: DetectDeviceServices) {
+				private ColorService: ColorsServices) {
 
-		 this._messageService.listenMessage().subscribe((m: String) => {
-      if (m == 'openAQLayerOn') {
-		  let params = this.Activatedroute.snapshot.queryParamMap;
-		  // this.currentZoom = +params.get('zoom') || 1;
-		  // this.currentLatitide = +params.get('lat') || 0;
-		  // this.currentLongitude = +params.get('long') || 0;
-          this.showOaqLayer = this.dataServices.showOpenAQLocations;
-		  this.createMap();
-      }
-
-    });
+		this._messageService.listenMessage()
+			.pipe(takeUntil(this.destroy$))
+			.subscribe((m: String) => {
+			if (m == 'openAQLayerOn') {
+				this.showOaqLayer = this.dataServices.showOpenAQLocations;
+				this.createMap();
+			}
+		});
 
 	}
 
-	ngOnInit() {
-
-	}
-
-	ngAfterViewInit() {
+	ngAfterViewInit(): void {
 		this.Activatedroute.queryParamMap
+			.pipe(takeUntil(this.destroy$))
 			.subscribe(params => {
 				this.dataServices.currentOrgId = params.get('org')||"ag";
-				console.log("org2: "+params.get('org')||"ag")
 				if(this.dataServices.currentOrgId!=null){
 					let params = this.Activatedroute.snapshot.queryParamMap;
-					console.log("dataServices.loadData 2");
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
 					this.currentLongitude = +params.get('long') || 0;
@@ -85,14 +73,19 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			});
 	}
 
-	createMap() {
+	ngOnDestroy(): void {
+		this.map?.remove();
+		this.destroy$.next();
+		this.destroy$.complete();
+	}
+
+	createMap(): void {
 		const initialState = {
 			lng: this.currentLongitude,
 			lat: this.currentLatitide,
 			zoom: this.currentZoom
 		};
 
-		console.log(initialState, 999)
 		this.map = new Map({
 			container: this.mapContainer.nativeElement,
 			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
@@ -105,23 +98,18 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 		this.map.addControl(new AttributionControl({
 			customAttribution: '<a href="https://www.airgradient.com/" target="_blank">&copy; AirGradient</a> | <a href="https://www.openaq.org/" target="_blank">&copy; OpenAQ</a>',
 			compact: false,
-			}));
+		}));
 
 		this.map.on('mouseenter', 'locations', () => {
-			console.log("ss")
-			this.map.getCanvas().style.cursor = 'pointer'
+			this.map.getCanvas().style.cursor = 'pointer';
 		})
 
 		this.map.on('mouseleave', 'locations', () => {
-			console.log("tt")
-			this.map.getCanvas().style.cursor = ''
+			this.map.getCanvas().style.cursor = '';
 		})
 
 		let that = this;
 		this.map.on('moveend', () => {
-			console.log('ghghZoom. ' + Math.round(that.map.getZoom()));
-			console.log('Lat. ' + Math.round(that.map.getCenter().lat * 1000) / 1000);
-			console.log('Long. ' + Math.round(that.map.getCenter().lng * 1000) / 1000);
 
 			let zoom = Math.round(that.map.getZoom());
 			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
@@ -131,8 +119,6 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			this.currentLatitide = lat;
 			this.currentLongitude = long;
 			let org = that.currentOrgId;
-			//let token = that.dataServices.AGtoken
-			//let OaqLayer = that.showOaqLayer
 			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org ;
 
 			that.location.replaceState("", queryString);
@@ -142,11 +128,9 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			const features = e.target.queryRenderedFeatures(e.point);
 			const locationsId = features[0].properties['sensor_nodes_id'];
 			const providerID = features[0].properties['providers_id'];
-			// console.log(features[0]);
 
-			var loc = new MapLocation()
+			const loc = new MapLocation();
 			loc.apiSource = "oaq";
-
 			loc.pm02 = features[0].properties['value'];
 			loc.locationId = locationsId;
 			loc.providerID = providerID;
@@ -154,7 +138,6 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			that.bottomSheet.open(BottomSheetLocationComponent);
 		});
 
-		//console.log("this.showOaqLayer: "+this.showOaqLayer)
 		if (this.showOaqLayer) {
 			this.map.on("load", () => {
 				this.map.addSource("locations", {
@@ -187,14 +170,11 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 					},
 				});
 			});
-
 		}
 		if (this.geocoderControl) {
 			this.map.removeControl(this.geocoderControl);
 		}
-
 		this.addControl();
-
 	}
 
 	private addControl(): void {
@@ -242,24 +222,12 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			showResultsWhileTyping: true,
 			zoom: 10,
 			debounceSearch: 200,
-			maplibregl: mm
+			maplibregl: maplibre
 		});
 		this.map.addControl(this.geocoderControl);
-		this.geocoderControl.on('result', ()=> {console.log(56456455)})
-		console.log(this.map)
 	}
 
-	ngOnDestroy() {
-		this.map?.remove();
-	}
-
-	logData(strx: string) {
-		console.log("cns: " + strx)
-		return "#ffffff"
-	}
-
-
-	async loadDataAG(){
+	async loadDataAG(): Promise<void> {
 		await firstValueFrom(this.getAGRequest())
 			.then((data: MapLocation[]) => {
 				this.agLocations = data;
@@ -274,27 +242,30 @@ export class agMap4Component implements OnInit, AfterViewInit, OnDestroy  {
 			});
 	}
 
-	getAGRequest() {
+	getAGRequest(): Observable<any> {
 		return this.http.get(environment.agApiRoot+'/public/api/v1/world/locations/measures/current');
 	}
 
-	addAQMarker(location: MapLocation) {
-		var that = this
-		var el = document.createElement('div');
+	addAQMarker(location: MapLocation): void {
+		const that = this;
+		const el = document.createElement('div');
 		el.className = 'marker';
-		el.style.width = "20px"
-		el.style.height = "20px"
+		el.style.width = "20px";
+		el.style.height = "20px";
 		el.style.backgroundColor = location.pm02_clr;
 		el.addEventListener('click', function () {
 			var loc = new MapLocation()
-						that.dataServices.selectedLocation = location;
-						that.bottomSheet.open(BottomSheetLocationComponent , {data: { location: that.dataServices.selectedLocation }} );
-			console.log("clicked")
+			that.dataServices.selectedLocation = location;
+			that.bottomSheet.open(BottomSheetLocationComponent ,
+				{ data: {
+						location: that.dataServices.selectedLocation
+					}
+				});
 		});
 
-     new Marker(el)
-      .setLngLat([location.longitude, location.latitude])
-      .addTo(this.map);
+		new Marker(el)
+			.setLngLat([location.longitude, location.latitude])
+			.addTo(this.map);
 	}
 
 }
