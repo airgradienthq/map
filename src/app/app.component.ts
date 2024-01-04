@@ -1,11 +1,9 @@
-import {Component, ViewChild, ViewContainerRef} from '@angular/core';
-import {DataServices} from "./services/data.services";
+import { AfterViewInit, Component, ViewChild, ViewContainerRef } from '@angular/core';
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
 import {MatSidenav} from "@angular/material/sidenav";
+
+import {DataServices} from "./services/data.services";
 import {SideNavServices} from "./services/side-nav.services";
-import {DetectDeviceServices} from "./services/detect-device.services";
-import {MessageService} from "./services/message.service";
-import {BottomSheetLocationComponent} from "./components/ui-components/bottom-sheet-location.component";
-import {MatBottomSheet, MatBottomSheetConfig} from "@angular/material/bottom-sheet";
 import {BottomSheetParametersComponent} from "./components/ui-components/layout/bottom-sheet-parameters.component";
 
 @Component({
@@ -76,8 +74,6 @@ import {BottomSheetParametersComponent} from "./components/ui-components/layout/
 				<mat-icon style="color: black">{{ dataServices.showFiller ? 'menu_open' : 'menu' }}</mat-icon>
 			</div>
 
-
-
 		<mat-drawer-container class="containerx" autosize>
 			<mat-drawer #sidenav class="sidenav" mode="side" style="z-index: 3000 !important;">
 				<side-bar style="z-index: 3000 !important;"></side-bar>
@@ -87,12 +83,10 @@ import {BottomSheetParametersComponent} from "./components/ui-components/layout/
 				{{dataServices.currentPara.name}}
 			</div>
 		</mat-drawer-container>
-
-
 	`
 })
 
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
 
 	@ViewChild('sidenav') public sidenav: MatSidenav;
 	@ViewChild('xxx', {read: ViewContainerRef}) containerRef;
@@ -100,17 +94,14 @@ export class AppComponent {
 
 	constructor(public dataServices: DataServices,
 				private sideNavService: SideNavServices,
-				private bottomSheet: MatBottomSheet,
-				public detectDevice: DetectDeviceServices) {
+				private bottomSheet: MatBottomSheet) {
 
-		console.log(localStorage.getItem('para'));
 
 		dataServices.para.forEach( (para) => {
 			if (para.value == localStorage.getItem('para')) {
 				this.dataServices.currentPara = para;
 			}
 		})
-
 	}
 
 	ngAfterViewInit(): void {

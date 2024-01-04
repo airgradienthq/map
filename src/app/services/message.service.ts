@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class MessageService {
         return this._listners.asObservable();
     }
 
-    sendMessage(filterBy: string) {
+    sendMessage(filterBy: string): void {
         this._listners.next(filterBy);
     }
 

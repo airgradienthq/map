@@ -50,11 +50,11 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		this._messageService.listenMessage()
 			.pipe(takeUntil(this.destroy$))
 			.subscribe((m: String) => {
-			if (m == 'openAQLayerOn') {
-				this.showOaqLayer = this.dataServices.showOpenAQLocations;
-				this.createMap();
-			}
-		});
+				if (m == 'openAQLayerOn') {
+					this.showOaqLayer = this.dataServices.showOpenAQLocations;
+					this.createMap();
+				}
+			});
 
 	}
 
@@ -221,7 +221,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		this.geocoderControl = new MaplibreGeocoder(geocoderApi, {
 			showResultsWhileTyping: true,
 			zoom: 10,
-			debounceSearch: 200,
+			debounceSearch: 300,
 			maplibregl: maplibre
 		});
 		this.map.addControl(this.geocoderControl);
@@ -269,5 +269,4 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	}
 
 }
-
 

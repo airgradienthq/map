@@ -1,7 +1,6 @@
+import {Injectable} from "@angular/core";
+
 import {MapLocation} from "../models/airgradient/map-location";
-import {Injectable, NgZone} from "@angular/core";
-import {ColorsServices} from "./colors.services";
-import {HttpClient} from "@angular/common/http";
 
 
 @Injectable()
@@ -9,11 +8,14 @@ export class DataServices {
 
 	showFiller = false;
 
-	oAQBlacklistIDs = [366891, 65199, 999, 65229, 70086, 274534, 72083, 72915 , 74693, 65176, 161788]
+	oAQBlacklistIDs = [366891, 65199, 999, 65229, 70086, 274534, 72083, 72915 , 74693, 65176, 161788];
 
 	para:Array<any> = [
 		{value: "pm02", name: "PM2.5 μg/m³", color: "pm02_clr", unit: "ug", oAQname: "pm25"},
 		{value: "pi02", name: "PM2.5 US AQI", color: "pm02_clr", unit: "aqi", oAQname: "PM2.5"},
+
+		// parameters list can be further extended as below
+
 		// {value: "pm01", name: "PM 1 in μg/m³", color: "pm02_clr", unit: "ug", oAQname: "pm1"},
 		// {value: "pm10", name: "PM 10 in μg/m³", color: "pm02_clr", unit: "ug", oAQname: "pm10"},
 
@@ -26,36 +28,15 @@ export class DataServices {
 
 	currentPara = this.para[0];
 	selectedLocation: MapLocation;
-	AGtoken:string;
 	currentOrgId: String = "ag";
-	location: MapLocation[];
 	showOpenAQLocations:boolean=false;
 
-
-
-	// oldy:number;
-	// oldx:number;
-
-	// currentLongitude:number;
-	// currentLatitide:number;
-	// currentZoom:number;
-
-  constructor(private http: HttpClient,private colorServices: ColorsServices,) {
+  constructor() {
   }
 
-
-
-
-	moveBack(){
+	moveBack(): void {
 		//this.airmap.panBy(new Point(- this.oldx, - ( this.oldy -60 )));
 	}
-
-
-
-
-
-
-
 
 
 }

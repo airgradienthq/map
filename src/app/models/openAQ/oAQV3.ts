@@ -11,9 +11,6 @@ export class datetime {
 	local: Date
 }
 
-
-
-
 export class resultz {
 	id: number;
 	name:string;

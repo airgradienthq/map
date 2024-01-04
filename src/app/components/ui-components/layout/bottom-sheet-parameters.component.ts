@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {DataServices} from "../../../services/data.services";
+import {Component} from '@angular/core';
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
+
 
 @Component({
 	selector: 'bottom-sheet-parameters',
@@ -19,10 +19,8 @@ import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
 
 export class BottomSheetParametersComponent  {
 
-
-	constructor(public dataServices: DataServices, private _bottomSheetRef: MatBottomSheetRef<BottomSheetParametersComponent>) {
+	constructor(private _bottomSheetRef: MatBottomSheetRef<BottomSheetParametersComponent>) {
 	}
-
 
 	openLink(event: MouseEvent): void {
 		this._bottomSheetRef.dismiss();

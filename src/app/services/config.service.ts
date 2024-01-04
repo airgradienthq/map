@@ -1,7 +1,9 @@
 import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
-import {Config} from "../models/config/config";
 import {lastValueFrom} from "rxjs";
+
+import {Config} from "../models/config/config";
+
 
 @Injectable({providedIn: 'root'})
 export class ConfigService {
