@@ -1,10 +1,12 @@
 import {Component, ElementRef, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {firstValueFrom, Observable} from 'rxjs';
 import {Map, Marker, NavigationControl, AttributionControl} from 'maplibre-gl';
-import {ActivatedRoute} from "@angular/router";
-import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
+import * as maplibre from 'maplibre-gl';
+import {firstValueFrom, Observable, Subject, takeUntil} from 'rxjs';
+import {HttpClient} from "@angular/common/http";
 import {Location} from "@angular/common";
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import {ActivatedRoute} from "@angular/router";
 
 import {DataServices} from "../../services/data.services";
 import {ColorsServices} from "../../services/colors.services";
@@ -20,7 +22,7 @@ import {MessageService} from "../../services/message.service";
 	templateUrl: 'ag-map4.component.html',
 })
 
-export class agMap4Component implements AfterViewInit, OnDestroy  {
+export class agMap4Component implements AfterViewInit, OnDestroy {
 
 	private currentLongitude:number = 0;
 	private currentLatitide:number = 0;
@@ -28,7 +30,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 	private currentOrgId: String = "ag";
 	private agLocations: MapLocation[];
 	private showOaqLayer: boolean = false;
-
+	private geocoderControl: MaplibreGeocoder;
+	private destroy$: Subject<void> = new Subject();
 	map: Map | undefined;
 
 	@ViewChild('map')
@@ -38,31 +41,29 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 				private dataServices: DataServices,
 				private _messageService: MessageService,
 				private usAqiServices: UsAQIServices,
+				private colorServices: ColorsServices,
 				public bottomSheet: MatBottomSheet,
 				private location: Location,
 				private http: HttpClient,
 				private ColorService: ColorsServices) {
 
-		this._messageService.listenMessage().subscribe((m: String) => {
-			if (m == 'openAQLayerOn') {
-				let params = this.Activatedroute.snapshot.queryParamMap;
-				this.currentZoom = +params.get('zoom') || 1;
-				this.currentLatitide = +params.get('lat') || 0;
-				this.currentLongitude = +params.get('long') || 0;
-				this.showOaqLayer = this.dataServices.showOpenAQLocations;
-
-				this.createMap();
-			}
-
-		});
+		this._messageService.listenMessage()
+			.pipe(takeUntil(this.destroy$))
+			.subscribe((m: String) => {
+				if (m == 'openAQLayerOn') {
+					this.showOaqLayer = this.dataServices.showOpenAQLocations;
+					this.createMap();
+				}
+			});
 
 	}
 
 	ngAfterViewInit(): void {
 		this.Activatedroute.queryParamMap
+			.pipe(takeUntil(this.destroy$))
 			.subscribe(params => {
 				this.dataServices.currentOrgId = params.get('org')||"ag";
-				if(this.dataServices.currentOrgId != null){
+				if(this.dataServices.currentOrgId!=null){
 					let params = this.Activatedroute.snapshot.queryParamMap;
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
@@ -70,6 +71,12 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 					this.createMap();
 				}
 			});
+	}
+
+	ngOnDestroy(): void {
+		this.map?.remove();
+		this.destroy$.next();
+		this.destroy$.complete();
 	}
 
 	createMap(): void {
@@ -93,21 +100,24 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 			compact: false,
 		}));
 
-
 		this.map.on('mouseenter', 'locations', () => {
-			this.map.getCanvas().style.cursor = 'pointer'
+			this.map.getCanvas().style.cursor = 'pointer';
 		})
 
 		this.map.on('mouseleave', 'locations', () => {
-			this.map.getCanvas().style.cursor = ''
+			this.map.getCanvas().style.cursor = '';
 		})
 
 		let that = this;
-		this.map.on('moveend', function () {
+		this.map.on('moveend', () => {
 
 			let zoom = Math.round(that.map.getZoom());
 			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
-			let long = Math.round(that.map.getCenter().lng * 1000) / 1000
+			let long = Math.round(that.map.getCenter().lng * 1000) / 1000;
+
+			this.currentZoom = zoom;
+			this.currentLatitide = lat;
+			this.currentLongitude = long;
 			let org = that.currentOrgId;
 			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org ;
 
@@ -118,11 +128,9 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 			const features = e.target.queryRenderedFeatures(e.point);
 			const locationsId = features[0].properties['sensor_nodes_id'];
 			const providerID = features[0].properties['providers_id'];
-			console.log(features[0]);
 
-			var loc = new MapLocation()
+			const loc = new MapLocation();
 			loc.apiSource = "oaq";
-
 			loc.pm02 = features[0].properties['value'];
 			loc.locationId = locationsId;
 			loc.providerID = providerID;
@@ -163,11 +171,60 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 				});
 			});
 		}
-		this.loadDataAG();
+		if (this.geocoderControl) {
+			this.map.removeControl(this.geocoderControl);
+		}
+		this.addControl();
 	}
 
-	ngOnDestroy(): void {
-		this.map?.remove();
+	private addControl(): void {
+		const geocoderApi = {
+			forwardGeocode: async (config) => {
+				const features = [];
+				try {
+					const request =
+						`https://nominatim.openstreetmap.org/search?q=${
+							config.query
+						}&format=geojson&polygon_geojson=1&addressdetails=1`;
+					const response = await fetch(request);
+					const geojson = await response.json();
+					for (const feature of geojson.features) {
+						const center = [
+							feature.bbox[0] +
+							(feature.bbox[2] - feature.bbox[0]) / 2,
+							feature.bbox[1] +
+							(feature.bbox[3] - feature.bbox[1]) / 2
+						];
+						const point = {
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: center
+							},
+							place_name: feature.properties.display_name,
+							properties: feature.properties,
+							text: feature.properties.display_name,
+							place_type: ['place'],
+							center
+						};
+						features.push(point);
+					}
+				} catch (e) {
+					console.error(`Failed to forwardGeocode with error: ${e}`);
+				}
+				return {
+					features
+				};
+			}
+		};
+
+		this.geocoderControl = new MaplibreGeocoder(geocoderApi, {
+			showResultsWhileTyping: true,
+			zoom: 10,
+			debounceSearch: 300,
+			maplibregl: maplibre
+		});
+		this.map.addControl(this.geocoderControl);
 	}
 
 	async loadDataAG(): Promise<void> {
@@ -179,7 +236,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 					if (location.publicLocationName == null) location.publicLocationName = "Public Name not set on Dashboard"
 					location.pm02 = Math.round(location.pm02)
 					location.pi02 = Math.round(this.usAqiServices.getUSaqi25(location.pm02))
-					location.pm02_clr = this.ColorService.getPM25Color(location.pm02)
+					location.pm02_clr = this.colorServices.getPM25Color(location.pm02)
 					if (location.latitude && location.latitude && location.locationName) this.addAQMarker(location);
 				});
 			});
@@ -190,18 +247,20 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 	}
 
 	addAQMarker(location: MapLocation): void {
-		var that = this
-		var el = document.createElement('div');
+		const that = this;
+		const el = document.createElement('div');
 		el.className = 'marker';
-		el.style.width = "20px"
-		el.style.height = "20px"
+		el.style.width = "20px";
+		el.style.height = "20px";
 		el.style.backgroundColor = location.pm02_clr;
 		el.addEventListener('click', function () {
-			var loc = new MapLocation();
+			var loc = new MapLocation()
 			that.dataServices.selectedLocation = location;
 			that.bottomSheet.open(BottomSheetLocationComponent ,
-				{data: { location: that.dataServices.selectedLocation }}
-			);
+				{ data: {
+						location: that.dataServices.selectedLocation
+					}
+				});
 		});
 
 		new Marker(el)
@@ -210,5 +269,4 @@ export class agMap4Component implements AfterViewInit, OnDestroy  {
 	}
 
 }
-
 

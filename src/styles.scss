@@ -2,6 +2,7 @@
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
 @import '~maplibre-gl/dist/maplibre-gl.css';
+@import "assets/styles/geocoder";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -38,5 +39,3 @@ $darkblue: #3d5a80;
 .widgetcontainer {
   margin: 20px;
 }
-
-

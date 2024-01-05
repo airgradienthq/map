@@ -1,0 +1,50 @@
+.mapboxgl-ctrl-geocoder--result-icon, maplibre-ctrl-geocoder--result-icon {
+    display: none !important;
+}
+
+.mapboxgl-ctrl-top-right, .maplibregl-ctrl-top-right {
+    right: 60px;
+}
+
+.mapboxgl-ctrl-geocoder--result-title,
+.maplibregl-ctrl-geocoder--result-title {
+    font-weight: 700;
+}
+
+.maplibregl-ctrl-geocoder  {
+    .suggestions > li > a {
+        border-bottom: 1px solid #c9c6c6;
+        padding-bottom: 10px;
+    }
+
+    @media screen and (max-width: 400px) {
+        max-width: 190px;
+        min-width: 190px;
+    }
+}
+
+.maplibregl-ctrl-geocoder--icon-search {
+    left: 7px;
+    width: 20px;
+    height: 20px;
+    top: 8px;
+}
+
+.maplibregl-ctrl-geocoder--icon-close {
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    margin-right: 0;
+    top: 8px;
+}
+
+.maplibregl-ctrl-geocoder--input {
+    font-size: 15px !important;
+    height: 36px !important;
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #0000001a;
+        border-radius: 5px;
+    }
+}
