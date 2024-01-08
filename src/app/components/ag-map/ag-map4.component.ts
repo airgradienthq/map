@@ -175,6 +175,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			this.map.removeControl(this.geocoderControl);
 		}
 		this.addControl();
+		this.loadDataAG()
 	}
 
 	private addControl(): void {
