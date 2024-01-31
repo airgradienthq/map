@@ -24,9 +24,9 @@ import {MessageService} from "../../services/message.service";
 
 export class agMap4Component implements AfterViewInit, OnDestroy {
 
-	private currentLongitude:number = 0;
-	private currentLatitide:number = 0;
-	private currentZoom:number = 1;
+	private currentLongitude: number = 0;
+	private currentLatitide: number = 0;
+	private currentZoom: number = 1;
 	private currentOrgId: String = "ag";
 	private agLocations: MapLocation[];
 	private showOaqLayer: boolean = false;
@@ -53,6 +53,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 				if (m == 'openAQLayerOn') {
 					this.showOaqLayer = this.dataServices.showOpenAQLocations;
 					this.createMap();
+					this.saveLocationParams();
 				}
 			});
 
@@ -68,6 +69,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
 					this.currentLongitude = +params.get('long') || 0;
+					this.showOaqLayer =  JSON.parse(params.get('showaq')) || false;
+					this.dataServices.showOpenAQLocations = this.showOaqLayer;
 					this.createMap();
 				}
 			});
@@ -118,10 +121,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			this.currentZoom = zoom;
 			this.currentLatitide = lat;
 			this.currentLongitude = long;
-			let org = that.currentOrgId;
-			let queryString = '?zoom=' + zoom + '&lat=' + lat + '&long=' + long + '&org=' + org ;
-
-			that.location.replaceState("", queryString);
+			this.saveLocationParams();
 		});
 
 		this.map.on('click', 'locations', function (e) {
@@ -269,5 +269,15 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			.addTo(this.map);
 	}
 
+	private saveLocationParams(
+		zoom = this.currentZoom,
+		lat =  this.currentLatitide,
+		long = this.currentLongitude
+	): void {
+		let queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}`;
+		this.location.replaceState("", queryString);
+	}
+
 }
+
 
