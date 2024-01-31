@@ -69,7 +69,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
 					this.currentLongitude = +params.get('long') || 0;
-					this.showOaqLayer =  JSON.parse(params.get('showaq')) || false;
+					this.showOaqLayer = JSON.parse(params.get('showaq')) || false;
 					this.dataServices.showOpenAQLocations = this.showOaqLayer;
 					this.createMap();
 				}
@@ -271,7 +271,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 
 	private saveLocationParams(
 		zoom = this.currentZoom,
-		lat =  this.currentLatitide,
+		lat = this.currentLatitide,
 		long = this.currentLongitude
 	): void {
 		let queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}`;
