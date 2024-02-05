@@ -117,7 +117,6 @@ import {MapLocation} from "../../models/airgradient/map-location";
 				</div>
 			</div>
 		</div>
-
 	`
 })
 
