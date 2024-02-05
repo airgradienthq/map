@@ -56,10 +56,8 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					</mat-chip>
 				</div>
 			</div>
-
-
+			
 			<div fxLayoutGap="10px" fxLayoutAlign="space-between center">
-
 
 				<div fxLayoutAlign="center center" fxLayout="column" style="height: 100%; padding: 10px 30px"
 					 [style.color]="this.colorServices.getTextColor(this.dataServices.selectedLocation[this.dataServices.currentPara.color])"
