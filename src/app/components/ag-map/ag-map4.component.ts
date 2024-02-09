@@ -1,20 +1,22 @@
 import {Component, ElementRef, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
-import {Map, Marker, NavigationControl, AttributionControl} from 'maplibre-gl';
+import { Map, Marker, NavigationControl, AttributionControl, GeoJSONSourceSpecification } from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import * as maplibre from 'maplibre-gl';
 import {firstValueFrom, Observable, Subject, takeUntil} from 'rxjs';
-import {HttpClient} from "@angular/common/http";
-import {Location} from "@angular/common";
-import {MatBottomSheet} from "@angular/material/bottom-sheet";
-import {ActivatedRoute} from "@angular/router";
+import {HttpClient} from '@angular/common/http';
+import {Location} from '@angular/common';
+import {MatBottomSheet} from '@angular/material/bottom-sheet';
+import {ActivatedRoute} from '@angular/router';
 
-import {DataServices} from "../../services/data.services";
-import {ColorsServices} from "../../services/colors.services";
-import {MapLocation} from "../../models/airgradient/map-location";
-import {BottomSheetLocationComponent} from "../ui-components/bottom-sheet-location.component";
-import {environment} from "../../../environments/environment";
-import {UsAQIServices} from "../../services/usAQI.services";
-import {MessageService} from "../../services/message.service";
+import {DataServices} from '../../services/data.services';
+import {ColorsServices} from '../../services/colors.services';
+import {MapLocation} from '../../models/airgradient/map-location';
+import {BottomSheetLocationComponent} from '../ui-components/bottom-sheet-location.component';
+import {environment} from '../../../environments/environment';
+import {UsAQIServices} from '../../services/usAQI.services';
+import {MessageService} from '../../services/message.service';
+import { FIRMSFireModel} from '../../models/airgradient/nasa-events';
+import { FIRE_POINT_COLOR } from '../../constants/fire-point-color';
 
 @Component({
 	selector: 'agMap4',
@@ -27,12 +29,15 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	private currentLongitude: number = 0;
 	private currentLatitide: number = 0;
 	private currentZoom: number = 1;
-	private currentOrgId: String = "ag";
+	private currentOrgId: String = 'ag';
 	private agLocations: MapLocation[];
 	private showOaqLayer: boolean = false;
 	private geocoderControl: MaplibreGeocoder;
 	private destroy$: Subject<void> = new Subject();
 	map: Map | undefined;
+
+	cachedFiresData = [];
+	private mapLoadCounter: number = 0;
 
 	@ViewChild('map')
 	private mapContainer!: ElementRef<HTMLElement>;
@@ -63,16 +68,20 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		this.Activatedroute.queryParamMap
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(params => {
-				this.dataServices.currentOrgId = params.get('org')||"ag";
-				if(this.dataServices.currentOrgId!=null){
-					let params = this.Activatedroute.snapshot.queryParamMap;
-					this.currentZoom = +params.get('zoom') || 1;
-					this.currentLatitide = +params.get('lat') || 0;
-					this.currentLongitude = +params.get('long') || 0;
-					this.showOaqLayer = JSON.parse(params.get('showaq')) || false;
-					this.dataServices.showOpenAQLocations = this.showOaqLayer;
-					this.createMap();
+				if (!this.mapLoadCounter) {
+					this.mapLoadCounter = 1;
+					this.dataServices.currentOrgId = params.get('org')||'ag';
+					if(this.dataServices.currentOrgId!=null){
+						let params = this.Activatedroute.snapshot.queryParamMap;
+						this.currentZoom = +params.get('zoom') || 1;
+						this.currentLatitide = +params.get('lat') || 0;
+						this.currentLongitude = +params.get('long') || 0;
+						this.showOaqLayer = JSON.parse(params.get('showaq')) || false;
+						this.dataServices.showOpenAQLocations = this.showOaqLayer;
+						this.createMap();
+					}
 				}
+
 			});
 	}
 
@@ -139,21 +148,21 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		});
 
 		if (this.showOaqLayer) {
-			this.map.on("load", () => {
-				this.map.addSource("locations", {
-					type: "vector",
+			this.map.on('load', () => {
+				this.map.addSource('locations', {
+					type: 'vector',
 					tiles: [
-						environment.openAqApiRoot+"/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true"
+						environment.openAqApiRoot+'/locations/tiles/{z}/{x}/{y}.pbf?parameters_id=2&active=true'
 					]
 				});
 				this.map.addLayer({
-					id: "locations",
-					type: "circle",
-					source: "locations",
-					"source-layer": "default",
-					"paint": {
-						"circle-radius": 12,
-						"circle-color": ["step",
+					id: 'locations',
+					type: 'circle',
+					source: 'locations',
+					'source-layer': 'default',
+					'paint': {
+						'circle-radius': 12,
+						'circle-color': ['step',
 							['get', 'value'],
 							this.ColorService.getPM25Color(10),
 							12,
@@ -176,6 +185,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		}
 		this.addControl();
 		this.loadDataAG()
+		this.displayFiresLayer();
 	}
 
 	private addControl(): void {
@@ -234,7 +244,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 				this.agLocations = data;
 				this.agLocations.forEach( (location) => {
 					location.apiSource = 'ag';
-					if (location.publicLocationName == null) location.publicLocationName = "Public Name not set on Dashboard"
+					if (location.publicLocationName == null) location.publicLocationName = 'Public Name not set on Dashboard'
 					location.pm02 = Math.round(location.pm02)
 					location.pi02 = Math.round(this.usAqiServices.getUSaqi25(location.pm02))
 					location.pm02_clr = this.colorServices.getPM25Color(location.pm02)
@@ -251,8 +261,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		const that = this;
 		const el = document.createElement('div');
 		el.className = 'marker';
-		el.style.width = "20px";
-		el.style.height = "20px";
+		el.style.width = '20px';
+		el.style.height = '20px';
 		el.style.backgroundColor = location.pm02_clr;
 		el.addEventListener('click', function () {
 			var loc = new MapLocation()
@@ -276,6 +286,68 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	): void {
 		let queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}`;
 		this.location.replaceState("", queryString);
+	}
+
+	private displayFiresLayer(): void {
+		if (!this.map.getLayer('fires')) {
+			this.getFirmsFiresData()
+				.subscribe((data: string ) => {
+					this.cachedFiresData = this.formatCsvToJSFireModelArray(data);
+					console.log(this.cachedFiresData,88)
+					this.addFiresLayerToMap(this.cachedFiresData);
+				});
+		} else {
+			this.addFiresLayerToMap(this.cachedFiresData);
+		}
+	}
+
+	private getFirmsFiresData(): Observable<string> {
+		return this.http.get(`${environment.firmsNasaUrl}/${environment.firmsNasaApiKey}/VIIRS_SNPP_NRT/world/1`,
+			{
+				responseType: 'text'
+			});
+	}
+
+	private getFireGeoJsonDataFeatures(firesData: FIRMSFireModel[]): any {
+		return firesData.map((firePoint: FIRMSFireModel) => {
+			return {
+				"type": "Feature",
+				"geometry": {
+					type: "Point",
+					coordinates: [firePoint.longitude, firePoint.latitude]
+				}
+			}
+		});
+	}
+
+	private addFiresLayerToMap(firesData: FIRMSFireModel[]): any {
+		this.map.addLayer({
+			"id": "fires",
+			"type": "circle",
+			"source": ({
+				"type": "geojson",
+				"data": {
+					"type": "FeatureCollection",
+					"features": this.getFireGeoJsonDataFeatures(firesData)
+				}
+			} as string & GeoJSONSourceSpecification),
+			"paint": {
+				"circle-radius": 3,
+				"circle-color": FIRE_POINT_COLOR
+			}
+		});
+	}
+
+	private formatCsvToJSFireModelArray(scvData: string): FIRMSFireModel[] {
+		const csvConvertedToArray = scvData.split('\n').map(v => v.split(','));
+		const headers = csvConvertedToArray[0];
+		return csvConvertedToArray.slice(1).map(row => {
+			let obj = {} as FIRMSFireModel;
+			for (let i = 0; i < row.length; i++) {
+				obj[headers[i]] = row[i];
+			}
+			return obj;
+		});
 	}
 
 }
