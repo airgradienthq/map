@@ -69,12 +69,10 @@ import {BottomSheetParametersComponent} from "./components/ui-components/layout/
 	template: `
 <!--		<header *ngIf="!detectDevice.detectMob()"></header>-->
 <!--		<header></header>-->
-
+		<mat-drawer-container class="containerx" autosize>
 			<div class="menuButton" (click)="this.sidenav.toggle()" fxLayoutAlign="center center">
 				<mat-icon style="color: black">{{ dataServices.showFiller ? 'menu_open' : 'menu' }}</mat-icon>
 			</div>
-
-		<mat-drawer-container class="containerx" autosize>
 			<mat-drawer #sidenav class="sidenav" mode="side" style="z-index: 3000 !important;">
 				<side-bar style="z-index: 3000 !important;"></side-bar>
 			</mat-drawer>
