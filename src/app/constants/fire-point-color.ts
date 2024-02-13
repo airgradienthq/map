@@ -1,1 +1,1 @@
-export const FIRE_POINT_COLOR = '#f56046'
+export const FIRE_POINT_COLOR = '#fc543e';

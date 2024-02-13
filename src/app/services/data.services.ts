@@ -1,12 +1,20 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
 
-import {MapLocation} from "../models/airgradient/map-location";
+import { MapLocation } from '../models/airgradient/map-location';
 
 
 @Injectable()
 export class DataServices {
 
 	showFiller = false;
+	mapLoading$ = new BehaviorSubject<boolean>(false);
+	apiLoading$ = new BehaviorSubject<boolean>(false);
+
+	loading$ = combineLatest(this.mapLoading$, this.apiLoading$)
+		.pipe(map(([mapLoading, apiLoading]) => {
+			return mapLoading || apiLoading;
+		}));
 
 	oAQBlacklistIDs = [366891, 65199, 999, 65229, 70086, 274534, 72083, 72915 , 74693, 65176, 161788];
 
@@ -29,7 +37,8 @@ export class DataServices {
 	currentPara = this.para[0];
 	selectedLocation: MapLocation;
 	currentOrgId: String = "ag";
-	showOpenAQLocations:boolean=false;
+	showOpenAQLocations: boolean = false;
+	showFirmsFires: boolean = false;
 
   constructor() {
   }
