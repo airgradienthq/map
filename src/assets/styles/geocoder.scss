@@ -3,7 +3,7 @@
 }
 
 .mapboxgl-ctrl-top-right, .maplibregl-ctrl-top-right {
-    right: 60px;
+    right: 90px;
 }
 
 .mapboxgl-ctrl-geocoder--result-title,
@@ -38,9 +38,17 @@
     top: 8px;
 }
 
+.maplibregl-ctrl-geocoder--icon {
+    fill: #293241;
+}
+
 .maplibregl-ctrl-geocoder--input {
     font-size: 15px !important;
     height: 36px !important;
+
+    &::placeholder {
+        color: #293241;
+    }
 
     &:focus {
         outline: none;
