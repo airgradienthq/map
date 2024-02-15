@@ -82,16 +82,14 @@ import { BottomSheetContents } from './models/airgradient/bottom-sheet-contents'
 
 	`],
 	template: `
-
-		<div class="menuButton" (click)="this.sidenav.toggle()" fxLayoutAlign="center center">
-			<mat-icon>{{ dataServices.showFiller ? 'menu_open' : 'menu' }}</mat-icon>
-		</div>
-		
-		<div class="layers-btn" (click)="openLayersParameters()" fxLayoutAlign="center center">
-			<mat-icon>layers</mat-icon>
-		</div>
-		
 		<mat-drawer-container class="containerx" autosize>
+			<div class="menuButton" (click)="this.sidenav.toggle()" fxLayoutAlign="center center">
+				<mat-icon>{{ dataServices.showFiller ? 'menu_open' : 'menu' }}</mat-icon>
+			</div>
+
+			<div class="layers-btn" (click)="openLayersParameters()" fxLayoutAlign="center center">
+				<mat-icon>layers</mat-icon>
+			</div>
 			<mat-drawer #sidenav class="sidenav" mode="side" style="z-index: 3000 !important;">
 				<side-bar style="z-index: 3000 !important;"></side-bar>
 			</mat-drawer>
