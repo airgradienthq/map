@@ -99,8 +99,8 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					</mat-menu>
 				</div>
 				
-				<div class="noData" *ngIf="historyDataServices.dataAvailable==false">Currently No Historical Data
-					Available
+				<div class="noData" *ngIf="!historyDataServices.dataAvailable">
+          Currently No Historical Data Available
 				</div>
 
 				<ngx-chartjs *ngIf="historyDataServices.dataAvailable==true" [data]="historyDataServices.chartdata"
@@ -110,8 +110,10 @@ import {MapLocation} from "../../models/airgradient/map-location";
 				</ngx-chartjs>
 
 				<div style="height: 5px" *ngIf="historyDataServices.dataAvailable==true">
-					<mat-progress-bar *ngIf="!this.historyDataServices.chartdata"
-									  mode="indeterminate"></mat-progress-bar>
+					<mat-progress-bar 
+            *ngIf="!this.historyDataServices.chartdata"
+            mode="indeterminate"
+          ></mat-progress-bar>
 				</div>
 			</div>
 		</div>
