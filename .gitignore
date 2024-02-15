@@ -2,4 +2,3 @@ node_modules/
 /.angular
 /dist
 /.idea
-/src/config/config.json

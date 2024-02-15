@@ -15,7 +15,7 @@ export class FirmsFiresServices {
 
 
     public getFirmsFiresData(): Observable<string> {
-        return this.http.get(`${environment.firmsNasaUrl}/${environment.firmsNasaApiKey}/VIIRS_SNPP_NRT/world/1`,
+        return this.http.get(`${environment.firmsNasaUrl}/${environment.firmsNasaApiKey}/VIIRS_SNPP_NRT/world/2`,
             {
                 responseType: 'text'
             });
