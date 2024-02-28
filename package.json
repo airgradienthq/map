@@ -8,7 +8,8 @@
     "build-prod": "ng build --configuration=production --aot --deploy-url=/ ",
     "build-int": "ng build --configuration=integration --aot --deploy-url=/ ",
     "lint": "ng lint",
-    "lint-fix": "ng lint --fix"
+    "lint-fix": "ng lint --fix",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -51,6 +52,7 @@
     "@typescript-eslint/eslint-plugin": "5.48.2",
     "@typescript-eslint/parser": "5.48.2",
     "eslint": "^8.33.0",
+    "husky": "^9.0.11",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
