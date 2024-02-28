@@ -1,4 +1,4 @@
-import {Duration} from "luxon";
+import { Duration } from 'luxon';
 
 export class AgChartPeriods {
   constructor(

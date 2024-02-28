@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import { ActivatedRoute } from '@angular/router';
 
-import {DataServices} from "../../../services/data.services";
+import { DataServices } from '../../../services/data.services';
 
 @Component({
-	selector: 'side-bar',
+	selector: 'app-side-bar',
 	styles: [`
 
 
@@ -15,11 +15,11 @@ import {DataServices} from "../../../services/data.services";
 
 <div style="background-color: #fff; width: 100%; height: 100%">
 
-	<ag *ngIf="this.dataServices.currentOrgId=='ag'"></ag>
-	<cap *ngIf="this.dataServices.currentOrgId=='cap'"></cap>
-	<tcan *ngIf="this.dataServices.currentOrgId=='tcan'"></tcan>
-	<narit *ngIf="this.dataServices.currentOrgId=='narit'"></narit>
-	<seen *ngIf="this.dataServices.currentOrgId=='seen'"></seen>
+	<app-ag *ngIf="this.dataServices.currentOrgId==='ag'"></app-ag>
+	<app-cap *ngIf="this.dataServices.currentOrgId==='cap'"></app-cap>
+	<app-tcan *ngIf="this.dataServices.currentOrgId==='tcan'"></app-tcan>
+	<app-narit *ngIf="this.dataServices.currentOrgId==='narit'"></app-narit>
+	<app-seen *ngIf="this.dataServices.currentOrgId==='seen'"></app-seen>
 
 </div>
 
@@ -37,7 +37,7 @@ export class SideBarComponent {
 
 		this.Activatedroute.queryParamMap
 			.subscribe(params => {
-				this.dataServices.currentOrgId = params.get('org')||"ag";
+				this.dataServices.currentOrgId = params.get('org')||'ag';
 			});
 	}
 

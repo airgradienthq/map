@@ -1,12 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-	selector: 'ag',
-	styles: [`
-
-
-
-  `],
+	selector: 'app-ag',
+	styles: [],
 	template: `
 		<div style="padding: 20px 20px">
 
@@ -33,7 +29,6 @@ import { Component } from '@angular/core';
 		</div>
 	`
 })
-
 export class AgComponent {}
 
 

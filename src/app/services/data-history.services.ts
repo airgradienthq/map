@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {ChartOptions} from "chart.js";
-import {DateTime, Duration} from "luxon";
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ChartOptions } from 'chart.js';
+import { DateTime, Duration } from 'luxon';
+import { Observable } from 'rxjs';
 
-import {ColorsServices} from "./colors.services";
-import {DataServices} from "./data.services";
-import {environment} from "../../environments/environment";
-import {AgChartPeriods} from "../models/airgradient/agChartPeriods";
-import {MapLocation} from "../models/airgradient/map-location";
-import {AgMeasures} from "../models/airgradient/agMeasures";
-import {UsAQIServices} from "./usAQI.services";
-import {openAQhistoryResults} from "../models/openAQ/oAQHistoryV3";
+import { ColorsServices } from './colors.services';
+import { DataServices } from './data.services';
+import { environment } from '../../environments/environment';
+import { AgChartPeriods } from '../models/airgradient/agChartPeriods';
+import { MapLocation } from '../models/airgradient/map-location';
+import { AgMeasures } from '../models/airgradient/agMeasures';
+import { UsAQIServices } from './usAQI.services';
+import { openAQhistoryResults } from '../models/openAQ/oAQHistoryV3';
 
 @Injectable()
 export class DataHistoryServices {
@@ -24,19 +24,20 @@ export class DataHistoryServices {
 	chartPeriods: AgChartPeriods[];
 	currentPeriod: AgChartPeriods;
 
-  constructor(private http: HttpClient,
-			  private dataServices: DataServices,
-			  private usAqiServices: UsAQIServices,
-			  private colors: ColorsServices) {
-
-	  this.chartPeriods = [
-		  new AgChartPeriods('Last 48 hours (1 hour)', '1h', '48h','hour', false, false,null, 'hour', Duration.fromObject({hours: 48})),
-		  new AgChartPeriods('Last Week (1 hour)', '1h', '7d','hour', false, false, null,'hour', Duration.fromObject({days: 7})),
-		  new AgChartPeriods('Last 30 days (1 hour)', '1h', '30d','week', true, false, null, 'hour', Duration.fromObject({days: 30})),
-		  new AgChartPeriods('Last 90 days (1 day)', '1d', '90d','month', true, false, null, 'day', Duration.fromObject({days: 90})),
-		  new AgChartPeriods('Last 180 days (1 day)', '1d', '180d','month', true, false, null, 'day', Duration.fromObject({days: 180})),
-		  new AgChartPeriods('Last 360 days (1 day)', '1d', '360d','month', true, false, null, 'day', Duration.fromObject({days: 360})),
-	  ];
+  constructor(
+		private http: HttpClient,
+		private dataServices: DataServices,
+		private usAqiServices: UsAQIServices,
+		private colors: ColorsServices
+	) {
+		this.chartPeriods = [
+			new AgChartPeriods('Last 48 hours (1 hour)', '1h', '48h','hour', false, false,null, 'hour', Duration.fromObject({ hours: 48 })),
+			new AgChartPeriods('Last Week (1 hour)', '1h', '7d','hour', false, false, null,'hour', Duration.fromObject({ days: 7 })),
+			new AgChartPeriods('Last 30 days (1 hour)', '1h', '30d','week', true, false, null, 'hour', Duration.fromObject({ days: 30 })),
+			new AgChartPeriods('Last 90 days (1 day)', '1d', '90d','month', true, false, null, 'day', Duration.fromObject({ days: 90 })),
+			new AgChartPeriods('Last 180 days (1 day)', '1d', '180d','month', true, false, null, 'day', Duration.fromObject({ days: 180 })),
+			new AgChartPeriods('Last 360 days (1 day)', '1d', '360d','month', true, false, null, 'day', Duration.fromObject({ days: 360 })),
+		];
   }
 
 	getHistory(location: MapLocation, period: AgChartPeriods): void {
@@ -49,14 +50,14 @@ export class DataHistoryServices {
 	}
 
 	getHistoryAG(location: number, period: AgChartPeriods): void {
-	  this.historyAGTransformedData = [];
+		this.historyAGTransformedData = [];
 		this.getHistoryRequestAG(location, period).subscribe((data: any) => {
 			data.forEach( (point: any) => {
-				var data2: AgMeasures = new AgMeasures("x", point.date, point.value, this.usAqiServices.getUSaqi25(point.value) );
+				const data2: AgMeasures = new AgMeasures('x', point.date, point.value, this.usAqiServices.getUSaqi25(point.value) );
 				this.historyAGTransformedData.push(data2);
 				console.log(data2)
 			});
-			this.prepareBarChartData(this.historyAGTransformedData,"pi02" ,100);
+			this.prepareBarChartData(this.historyAGTransformedData,'pi02' ,100);
 		});
 	}
 
@@ -68,20 +69,20 @@ export class DataHistoryServices {
 	// }
 
 	getHistoryOaq(location: number, period: AgChartPeriods): void {
-	  this.historyOaqTransformedData = [];
+		this.historyOaqTransformedData = [];
 		this.getHistoryRequestOpenAQ(location, period).subscribe((data: any) => {
 			data.results.forEach( (point: openAQhistoryResults) => {
-				var data2: AgMeasures = new AgMeasures("x", point.period.datetimeFrom.local, point.value, this.usAqiServices.getUSaqi25(point.value) );
+				const data2: AgMeasures = new AgMeasures('x', point.period.datetimeFrom.local, point.value, this.usAqiServices.getUSaqi25(point.value) );
 				this.historyOaqTransformedData.push(data2);
 			});
 			if (data.meta.found==0) {
-				console.log("no data")
+				console.log('no data')
 			}
 			this.prepareBarChartData(this.historyOaqTransformedData,this.dataServices.currentPara.value ,data.meta.found);
 		});
 	}
 
-	getHistoryRequestOpenAQ(location:number=228551, period: AgChartPeriods): Observable<any> {
+	getHistoryRequestOpenAQ(location=228551, period: AgChartPeriods): Observable<any> {
 		const dateTo = DateTime.now();
 		const dateFrom = dateTo.minus(period.duration);
 		const params = new URLSearchParams({
@@ -97,9 +98,9 @@ export class DataHistoryServices {
 
 
 	prepareBarChartData(data: AgMeasures[], measure:string, found: number): void{
-		let dates: any[]=[];
-		let values: number[]=[];
-		let colors: string[]=[];
+		const dates: any[]=[];
+		const values: number[]=[];
+		const colors: string[]=[];
 		if (found==0) {
 			this.dataAvailable = false;
 			return;
@@ -112,20 +113,20 @@ export class DataHistoryServices {
 		});
 		this.measures.forEach((meas) => {
 			dates.push(meas.date);
-			if ((meas[measure])==0 && (measure=="pm02" || measure=="pi02" || measure=="tvoc" )) {
+			if ((meas[measure])==0 && (measure=='pm02' || measure=='pi02' || measure=='tvoc' )) {
 				values.push(0.4);
 				colors.push(this.colors.getPM25Color(0.4));
 			} else {
 					values.push(meas[measure]);
 					colors.push(this.colors.getPM25Color(meas['pm02']));
 			}
-			if (meas[measure]) this[measure + "_has"] = true;
+			if (meas[measure]) this[measure + '_has'] = true;
 		});
 
-		let axisLabel="";
-		if (measure=="pm02") axisLabel="PM2.5 in μg/m³";
-		if (measure=="pi02") axisLabel="PM2.5 in US AQI";
-		if (measure=="rhum") axisLabel="Relative Humidity in %";
+		let axisLabel='';
+		if (measure=='pm02') axisLabel='PM2.5 in μg/m³';
+		if (measure=='pi02') axisLabel='PM2.5 in US AQI';
+		if (measure=='rhum') axisLabel='Relative Humidity in %';
 
 
 		this.optionsdata={
@@ -142,9 +143,8 @@ export class DataHistoryServices {
 					time: {
 						unit: 'day',
 						unitStepSize: 1,
-						displayFormats: {
-						   'day': 'MMM DD'
-						}}
+						displayFormats: { 'day': 'MMM DD' }
+					}
 				}],
 				yAxes: [{
 					id: 'A',

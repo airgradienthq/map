@@ -23,14 +23,14 @@ export class AgMeasures {
   pm02_clr: string;
   pm02_lbl: string;
 
-  pi02: number=0;
+  pi02=0;
   pi02_clr: string;
   pi02_lbl: string;
   pi02_max: number;
   pi02_min: number;
 
 
-  pm10: number=0;
+  pm10=0;
   pm10_aqi: number;
   pm10_clr: string;
   pm10_lbl: string;
