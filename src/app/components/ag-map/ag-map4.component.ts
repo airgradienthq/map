@@ -279,8 +279,12 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		const that = this;
 		const el = document.createElement('div');
 		el.className = 'marker';
-		el.style.width = '20px';
-		el.style.height = '20px';
+		el.style.width = '30px';
+		el.style.height = '30px';
+		el.textContent = location.pm02+"";
+		el.style.color = 'white';
+		el.style.textAlign = 'center';
+		el.style.lineHeight = '30px';
 		el.style.backgroundColor = location.pm02_clr;
 		el.addEventListener('click', function () {
 			var loc = new MapLocation()
