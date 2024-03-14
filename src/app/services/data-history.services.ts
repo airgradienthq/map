@@ -20,6 +20,7 @@ export class DataHistoryServices {
 	historyAGTransformedData:AgMeasures[] = [];
 	measures: AgMeasures[];
 	chartdata;
+	tooManyRequests = false;
 	optionsdata : ChartOptions = {};
 	chartPeriods: AgChartPeriods[];
 	currentPeriod: AgChartPeriods;
@@ -42,7 +43,7 @@ export class DataHistoryServices {
 	getHistory(location: MapLocation, period: AgChartPeriods): void {
 		this.chartdata = null;
 		this.dataAvailable = true;
-		if (period == null) period = this.chartPeriods[0];
+		if (period == null) period = this.chartPeriods?.[0];
 		this.currentPeriod = period;
 		if (location.apiSource == 'oaq') this.getHistoryOaq(location.locationId, period);
 		if (location.apiSource == 'ag') this.getHistoryAG(location.locationId, period);
@@ -69,6 +70,7 @@ export class DataHistoryServices {
 
 	getHistoryOaq(location: number, period: AgChartPeriods): void {
 	  this.historyOaqTransformedData = [];
+		this.tooManyRequests = false;
 		this.getHistoryRequestOpenAQ(location, period).subscribe((data: any) => {
 			data.results.forEach( (point: openAQhistoryResults) => {
 				var data2: AgMeasures = new AgMeasures("x", point.period.datetimeFrom.local, point.value, this.usAqiServices.getUSaqi25(point.value) );
@@ -77,8 +79,14 @@ export class DataHistoryServices {
 			if (data.meta.found==0) {
 				console.log("no data")
 			}
-			this.prepareBarChartData(this.historyOaqTransformedData,this.dataServices.currentPara.value ,data.meta.found);
-		});
+			this.prepareBarChartData(this.historyOaqTransformedData,this.dataServices.currentPara.value , data.meta.found);
+		},
+			(error) => {
+				this.dataAvailable = false;
+				if (error.status === 429) {
+					this.tooManyRequests = true;
+				}
+			});
 	}
 
 	getHistoryRequestOpenAQ(location:number=228551, period: AgChartPeriods): Observable<any> {

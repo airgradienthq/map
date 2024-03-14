@@ -47,7 +47,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 		<div class="widgetcontainer" fxLayout="column">
 			<div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center space-between">
 				<div *ngIf="this.dataServices.selectedLocation.apiSource=='ag'" class="subheader">{{this.dataServices.selectedLocation.publicLocationName}}</div>
-				<div *ngIf="this.dataServices.selectedLocation.apiSource=='oaq'" class="subheader">{{this.locationdata?.results[0]?.name}}</div>
+				<div *ngIf="this.dataServices.selectedLocation.apiSource=='oaq'" class="subheader">{{this.locationdata?.results?.[0]?.name}}</div>
 
 				<div fxLayout="column" fxLayoutGap="3px">
 					<mat-chip *ngIf="this.dataServices.selectedLocation.atmp">
@@ -76,7 +76,7 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					<div *ngIf="this.dataServices.selectedLocation.apiSource=='ag'">Source: AirGradient</div>
 					<div
 						*ngIf="this.dataServices.selectedLocation.apiSource=='oaq' && this.dataServices.selectedLocation.providerID!=215">
-						Source: {{this.providerdata?.results[0]?.name}} (via OpenAQ)
+						Source: {{this.providerdata?.results?.[0]?.name}} (via OpenAQ)
 					</div>
 					<div
 						*ngIf="this.dataServices.selectedLocation.apiSource=='oaq' && this.dataServices.selectedLocation.providerID==215">
@@ -100,7 +100,9 @@ import {MapLocation} from "../../models/airgradient/map-location";
 				</div>
 				
 				<div class="noData" *ngIf="!historyDataServices.dataAvailable">
-          Currently No Historical Data Available
+					{{ historyDataServices.tooManyRequests ?
+					'Too many requests.Try again later, please.' :
+					'Currently No Historical Data Available' }}
 				</div>
 
 				<ngx-chartjs *ngIf="historyDataServices.dataAvailable==true" [data]="historyDataServices.chartdata"
