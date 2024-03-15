@@ -1,47 +1,45 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {animate, style, transition, trigger} from "@angular/animations";
-import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef} from "@angular/material/bottom-sheet";
+import { Component, Inject, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
-import {DataServices} from "../../services/data.services";
-import {ColorsServices} from "../../services/colors.services";
-import {DataHistoryServices} from "../../services/data-history.services";
-import {AgChartPeriods} from "../../models/airgradient/agChartPeriods";
-import {MapLocation} from "../../models/airgradient/map-location";
+import { DataServices } from '../../services/data.services';
+import { ColorsServices } from '../../services/colors.services';
+import { DataHistoryServices } from '../../services/data-history.services';
+import { AgChartPeriods } from '../../models/airgradient/agChartPeriods';
+import { MapLocation } from '../../models/airgradient/map-location';
 
 @Component({
-	selector: 'bottom-sheet-location',
+	selector: 'app-bottom-sheet-location',
 	animations: [
 		trigger('slideInOut', [
 			transition(':enter', [
-				style({transform: 'translateY(100%)'}),
-				animate('1000ms ease-in', style({transform: 'translateY(0%)'}))
+				style({ transform: 'translateY(100%)' }),
+				animate('1000ms ease-in', style({ transform: 'translateY(0%)' }))
 			]),
 			transition(':leave', [
-				animate('1000ms ease-in', style({transform: 'translateY(100%)'}))
+				animate('1000ms ease-in', style({ transform: 'translateY(100%)' }))
 			])
 		])
 	],
 	styles: [`
-
-	  .aq-button {
-		color: white;
-		background-color: #ee6c4d;
-		height: 70px;
-		width: 100px;
-		padding: 10px;
-		border-radius: 2px;
-		cursor: pointer;
-		text-align: center;
-	  }
-
-	  .noData {
-		color: white;
-		background-color: dodgerblue;
-		height: 20px;
-		width: 100%;
-		text-align: center;
-	  }
-
+		.aq-button {
+			color: white;
+			background-color: #ee6c4d;
+			height: 70px;
+			width: 100px;
+			padding: 10px;
+			border-radius: 2px;
+			cursor: pointer;
+			text-align: center;
+		}
+		
+		.noData {
+			color: white;
+			background-color: dodgerblue;
+			height: 20px;
+			width: 100%;
+			text-align: center;
+		}
 	`],
 	template: `
 		<div class="widgetcontainer" fxLayout="column">
@@ -59,10 +57,14 @@ import {MapLocation} from "../../models/airgradient/map-location";
 			
 			<div fxLayoutGap="10px" fxLayoutAlign="space-between center">
 
-				<div fxLayoutAlign="center center" fxLayout="column" style="height: 100%; padding: 10px 30px"
-					 [style.color]="this.colorServices.getTextColor(this.dataServices.selectedLocation[this.dataServices.currentPara.color])"
-					 [style.background-color]="this.dataServices.selectedLocation[this.dataServices.currentPara.color]"
-					 class="aq-button">
+				<div
+					class="aq-button"
+					fxLayoutAlign="center center" 
+					fxLayout="column" 
+					style="height: 100%; padding: 10px 30px" 
+					[style.color]="this.colorServices.getTextColor(this.dataServices.selectedLocation[this.dataServices.currentPara.color])" 
+					[style.background-color]="this.dataServices.selectedLocation[this.dataServices.currentPara.color]"
+				>
 					<div
 						style="font-size: 36px;  margin-top: 10px">{{this.dataServices.selectedLocation[this.dataServices.currentPara.value] | number : '1.0-0'}}</div>
 					<div style="font-size: 12px; margin-top: 10px">{{this.dataServices.currentPara.name}}<br>current
@@ -73,13 +75,16 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					<div *ngIf="this.dataServices.selectedLocation.publicPlaceName">Data
 						Owner: {{this.dataServices.selectedLocation.publicPlaceName }}</div>
 					<!--				<div>Last Update: {{this.dataServices.selectedLocation.timestamp | date:"MM/dd/yy hh:mm" }} </div>-->
-					<div *ngIf="this.dataServices.selectedLocation.apiSource=='ag'">Source: AirGradient</div>
+					<div *ngIf="this.dataServices.selectedLocation.apiSource==='ag'">Source: AirGradient</div>
 					<div
-						*ngIf="this.dataServices.selectedLocation.apiSource=='oaq' && this.dataServices.selectedLocation.providerID!=215">
+						*ngIf="this.dataServices.selectedLocation.apiSource === 'oaq' && 
+						  this.dataServices.selectedLocation.providerID !==215"
+          >
 						Source: {{this.providerdata?.results?.[0]?.name}} (via OpenAQ)
 					</div>
 					<div
-						*ngIf="this.dataServices.selectedLocation.apiSource=='oaq' && this.dataServices.selectedLocation.providerID==215">
+						*ngIf="this.dataServices.selectedLocation.apiSource === 'oaq' 
+							&& this.dataServices.selectedLocation.providerID === 215">
 						Source: <a href="https://www2.purpleair.com/" target="_blank">PurpleAir</a> (via <a href="https://openaq.org/" target="_blank">OpenAQ</a>)
 					</div>
 				</div>
@@ -105,13 +110,14 @@ import {MapLocation} from "../../models/airgradient/map-location";
 					'Currently No Historical Data Available' }}
 				</div>
 
-				<ngx-chartjs *ngIf="historyDataServices.dataAvailable==true" [data]="historyDataServices.chartdata"
-							 [options]="historyDataServices.optionsdata"
-							 type="bar">
+				<ngx-chartjs 
+					*ngIf="historyDataServices.dataAvailable"
+					[data]="historyDataServices.chartdata"
+					[options]="historyDataServices.optionsdata"
+					type="bar"
+				></ngx-chartjs>
 
-				</ngx-chartjs>
-
-				<div style="height: 5px" *ngIf="historyDataServices.dataAvailable==true">
+				<div style="height: 5px" *ngIf="historyDataServices.dataAvailable">
 					<mat-progress-bar 
             *ngIf="!this.historyDataServices.chartdata"
             mode="indeterminate"
@@ -146,16 +152,12 @@ export class BottomSheetLocationComponent implements OnInit {
 		this.historyDataServices.getHistory(this.dataServices.selectedLocation, period);
 	}
 
-
 	ngOnInit(): void {
-    	fetch('https://staging.openaq.org/v3/providers/'+this.dataServices.selectedLocation.providerID)
+		fetch('https://staging.openaq.org/v3/providers/'+this.dataServices.selectedLocation.providerID)
 			.then((response) => response.json())
 			.then((results) => (this.providerdata = results));
 		fetch('https://staging.openaq.org/v3/locations/'+this.dataServices.selectedLocation.locationId)
 			.then((response) => response.json())
 			.then((results) => (this.locationdata = results));
   }
-
 }
-
-

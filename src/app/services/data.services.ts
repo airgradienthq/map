@@ -19,8 +19,8 @@ export class DataServices {
 	oAQBlacklistIDs = [366891, 65199, 999, 65229, 70086, 274534, 72083, 72915 , 74693, 65176, 161788];
 
 	para:Array<any> = [
-		{value: "pm02", name: "PM2.5 μg/m³", color: "pm02_clr", unit: "ug", oAQname: "pm25"},
-		{value: "pi02", name: "PM2.5 US AQI", color: "pm02_clr", unit: "aqi", oAQname: "PM2.5"},
+		{ value: 'pm02', name: 'PM2.5 μg/m³', color: 'pm02_clr', unit: 'ug', oAQname: 'pm25' },
+		{ value: 'pi02', name: 'PM2.5 US AQI', color: 'pm02_clr', unit: 'aqi', oAQname: 'PM2.5' },
 
 		// parameters list can be further extended as below
 
@@ -36,16 +36,11 @@ export class DataServices {
 
 	currentPara = this.para[0];
 	selectedLocation: MapLocation;
-	currentOrgId: String = "ag";
-	showOpenAQLocations: boolean = false;
-	showFirmsFires: boolean = false;
-
-  constructor() {
-  }
+	currentOrgId = 'ag';
+	showOpenAQLocations = false;
+	showFirmsFires = false;
 
 	moveBack(): void {
 		//this.airmap.panBy(new Point(- this.oldx, - ( this.oldy -60 )));
 	}
-
-
 }

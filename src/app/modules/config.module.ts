@@ -1,7 +1,7 @@
-import {APP_INITIALIZER, NgModule} from "@angular/core";
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import {Config} from "../models/config/config";
-import {ConfigService} from "../services/config.service";
+import { Config } from '../models/config/config';
+import { ConfigService } from '../services/config.service';
 
 @NgModule({
   providers: [

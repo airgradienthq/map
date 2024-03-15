@@ -3,7 +3,7 @@ import { Map, Marker, NavigationControl, AttributionControl, GeoJSONSourceSpecif
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import * as maplibre from 'maplibre-gl';
 import { firstValueFrom, Observable, Subject, takeUntil } from 'rxjs';
-import { HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute } from '@angular/router';
@@ -20,20 +20,20 @@ import { FIRE_POINT_COLOR } from '../../constants/fire-point-color';
 import { FirmsFiresServices } from '../../services/firms-fires.services';
 
 @Component({
-	selector: 'agMap4',
+	selector: 'app-ag-map4',
 	styleUrls: ['ag-map4.component.scss'],
 	templateUrl: 'ag-map4.component.html',
 })
 
 export class agMap4Component implements AfterViewInit, OnDestroy {
 
-	private currentLongitude: number = 0;
-	private currentLatitide: number = 0;
-	private currentZoom: number = 1;
-	private currentOrgId: String = 'ag';
+	private currentLongitude = 0;
+	private currentLatitide = 0;
+	private currentZoom = 1;
+	private currentOrgId = 'ag';
 	private agLocations: MapLocation[];
-	private showOaqLayer: boolean = false;
-	private showFirmsFiresLayer: boolean = false;
+	private showOaqLayer = false;
+	private showFirmsFiresLayer = false;
 	private geocoderControl: MaplibreGeocoder;
 	private destroy$: Subject<void> = new Subject();
 	map: Map | undefined;
@@ -54,7 +54,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 
 		this._messageService.listenMessage()
 			.pipe(takeUntil(this.destroy$))
-			.subscribe((m: String) => {
+			.subscribe((m: string) => {
 				if (m === 'openAQLayerOn') {
 					this.showOaqLayer = this.dataServices.showOpenAQLocations;
 					this.createMap();
@@ -75,7 +75,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			.subscribe(params => {
 				this.dataServices.currentOrgId = params.get('org')||'ag';
 				if(this.dataServices.currentOrgId != null){
-					let params = this.Activatedroute.snapshot.queryParamMap;
+					const params = this.Activatedroute.snapshot.queryParamMap;
 					this.currentZoom = +params.get('zoom') || 1;
 					this.currentLatitide = +params.get('lat') || 0;
 					this.currentLongitude = +params.get('long') || 0;
@@ -123,12 +123,11 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			this.map.getCanvas().style.cursor = '';
 		})
 
-		let that = this;
 		this.map.on('moveend', () => {
 
-			let zoom = Math.round(that.map.getZoom());
-			let lat = Math.round(that.map.getCenter().lat * 1000) / 1000;
-			let long = Math.round(that.map.getCenter().lng * 1000) / 1000;
+			const zoom = Math.round(this.map.getZoom());
+			const lat = Math.round(this.map.getCenter().lat * 1000) / 1000;
+			const long = Math.round(this.map.getCenter().lng * 1000) / 1000;
 
 			this.currentZoom = zoom;
 			this.currentLatitide = lat;
@@ -136,18 +135,18 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			this.saveLocationParams();
 		});
 
-		this.map.on('click', 'locations', function (e) {
+		this.map.on('click', 'locations', (e) => {
 			const features = e.target.queryRenderedFeatures(e.point);
 			const locationsId = features[0].properties['sensor_nodes_id'];
 			const providerID = features[0].properties['providers_id'];
 
 			const loc = new MapLocation();
-			loc.apiSource = "oaq";
+			loc.apiSource = 'oaq';
 			loc.pm02 = features[0].properties['value'];
 			loc.locationId = locationsId;
 			loc.providerID = providerID;
-			that.dataServices.selectedLocation = loc;
-			that.bottomSheet.open(BottomSheetLocationComponent);
+			this.dataServices.selectedLocation = loc;
+			this.bottomSheet.open(BottomSheetLocationComponent);
 		});
 
 		if (this.showOaqLayer) {
@@ -276,7 +275,6 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	}
 
 	addAQMarker(location: MapLocation): void {
-		const that = this;
 		const el = document.createElement('div');
 		el.className = 'marker';
 		el.style.width = '30px';
@@ -286,12 +284,12 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		el.style.textAlign = 'center';
 		el.style.lineHeight = '30px';
 		el.style.backgroundColor = location.pm02_clr;
-		el.addEventListener('click', function () {
-			var loc = new MapLocation()
-			that.dataServices.selectedLocation = location;
-			that.bottomSheet.open(BottomSheetLocationComponent ,
+		el.addEventListener('click',() => {
+			const loc = new MapLocation()
+			this.dataServices.selectedLocation = location;
+			this.bottomSheet.open(BottomSheetLocationComponent ,
 				{ data: {
-						location: that.dataServices.selectedLocation
+						location: this.dataServices.selectedLocation
 					}
 				});
 		});
@@ -306,8 +304,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		lat = this.currentLatitide,
 		long = this.currentLongitude
 	): void {
-		let queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}&showfirms=${this.showFirmsFiresLayer}`;
-		this.location.replaceState("", queryString);
+		const queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}&showfirms=${this.showFirmsFiresLayer}`;
+		this.location.replaceState('', queryString);
 	}
 
 	private displayFiresLayer(): void {
@@ -333,18 +331,18 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 
 	private addFiresLayerToMap(firesData: FIRMSFireModel[]): any {
 		this.map.addLayer({
-			"id": "fires",
-			"type": "circle",
-			"source": ({
-				"type": "geojson",
-				"data": {
-					"type": "FeatureCollection",
-					"features": this.firmsFireService.getFireGeoJsonDataFeatures(firesData)
+			'id': 'fires',
+			'type': 'circle',
+			'source': ({
+				'type': 'geojson',
+				'data': {
+					'type': 'FeatureCollection',
+					'features': this.firmsFireService.getFireGeoJsonDataFeatures(firesData)
 				}
 			} as string & GeoJSONSourceSpecification),
-			"paint": {
-				"circle-radius": 3,
-				"circle-color": FIRE_POINT_COLOR
+			'paint': {
+				'circle-radius': 3,
+				'circle-color': FIRE_POINT_COLOR
 			}
 		});
 	}

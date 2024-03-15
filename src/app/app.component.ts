@@ -91,9 +91,9 @@ import { BottomSheetContents } from './models/airgradient/bottom-sheet-contents'
 				<mat-icon>layers</mat-icon>
 			</div>
 			<mat-drawer #sidenav class="sidenav" mode="side" style="z-index: 3000 !important;">
-				<side-bar style="z-index: 3000 !important;"></side-bar>
+				<app-side-bar style="z-index: 3000 !important;"></app-side-bar>
 			</mat-drawer>
-			<agMap4></agMap4>
+			<app-ag-map4></app-ag-map4>
 			<div role="button" class="aq-button" fxLayoutAlign="center center" (click)="openCO2Parameters()">
 				{{dataServices.currentPara.name}}
 			</div>
@@ -105,7 +105,7 @@ import { BottomSheetContents } from './models/airgradient/bottom-sheet-contents'
 export class AppComponent implements AfterViewInit {
 
 	@ViewChild('sidenav') public sidenav: MatSidenav;
-	@ViewChild('xxx', {read: ViewContainerRef}) containerRef;
+	@ViewChild('xxx', { read: ViewContainerRef }) containerRef;
 
 
 	constructor(public dataServices: DataServices,

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-	selector: 'narit',
+	selector: 'app-narit',
 	styles: [`
 
 

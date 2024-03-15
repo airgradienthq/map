@@ -29,7 +29,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              {"glob": "config.json", "input": "src/config", "output": "/"}
+              {
+                "glob": "config.json",
+                "input": "src/config",
+                "output": "/"
+              }
             ],
             "styles": [
               "@angular/material/prebuilt-themes/deeppurple-amber.css",
@@ -125,11 +129,23 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
