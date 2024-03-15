@@ -12,7 +12,6 @@ import { AppComponent } from '../app.component';
 import { ColorsServices } from '../services/colors.services';
 import { DataServices } from '../services/data.services';
 import { MaterialModule } from './material.module';
-import { DummyComponent } from '../components/ui-components/dummy.component';
 import { SideBarComponent } from '../components/ui-components/layout/side-bar.component';
 import { HeaderComponent } from '../components/ui-components/layout/header.component';
 import { SideNavServices } from '../services/side-nav.services';
@@ -39,7 +38,6 @@ import { LayersConfigComponent } from '../components/ui-components/configuration
 	declarations: [
 		AppComponent,
 		agMap4Component,
-		DummyComponent,
 		SideBarComponent,
 		HeaderComponent,
 		BottomSheetParametersComponent,

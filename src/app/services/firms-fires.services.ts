@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../environments/environment';
 import { FIRMSFireModel } from '../models/airgradient/nasa-events';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class FirmsFiresServices {
 
     public firesData: FIRMSFireModel[] = [];
@@ -25,7 +25,7 @@ export class FirmsFiresServices {
         const csvConvertedToArray = scvData.split('\n').map(v => v.split(','));
         const headers = csvConvertedToArray[0];
         this.firesData = csvConvertedToArray.slice(1).map(row => {
-            let obj = {} as FIRMSFireModel;
+            const obj = {} as FIRMSFireModel;
             for (let i = 0; i < row.length; i++) {
                 obj[headers[i]] = row[i];
             }
@@ -37,9 +37,9 @@ export class FirmsFiresServices {
     public getFireGeoJsonDataFeatures(firesData: FIRMSFireModel[]): any {
         return firesData.map((firePoint: FIRMSFireModel) => {
             return {
-                "type": "Feature",
-                "geometry": {
-                    type: "Point",
+                'type': 'Feature',
+                'geometry': {
+                    type: 'Point',
                     coordinates: [firePoint.longitude, firePoint.latitude]
                 }
             }

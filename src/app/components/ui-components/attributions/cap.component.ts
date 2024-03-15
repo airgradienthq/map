@@ -1,14 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-	selector: 'cap',
-	styles: [`
-
-
-
-  `],
+	selector: 'app-cap',
+	styles: [],
 	template: `
-
 		<div fxLayout="row" fxLayoutAlign="space-around center" style="margin-top: 30px " >
 			<img width="100px" src="/assets/logos/cap.png"/>
 			<img width="100px" src="/assets/logos/ag.svg"/>
