@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ChartOptions } from 'chart.js';
+import { ChartOptions, ChartData, Chart, registerables } from 'chart.js';
 import { DateTime, Duration } from 'luxon';
 import { Observable } from 'rxjs';
+import 'chartjs-adapter-luxon';
 
 import { ColorsServices } from './colors.services';
 import { DataServices } from './data.services';
@@ -13,13 +14,15 @@ import { AgMeasures } from '../models/airgradient/agMeasures';
 import { UsAQIServices } from './usAQI.services';
 import { openAQhistoryResults } from '../models/openAQ/oAQHistoryV3';
 
+Chart.register(...registerables);
+
 @Injectable()
 export class DataHistoryServices {
 	dataAvailable: boolean;
 	historyOaqTransformedData:AgMeasures[] = [];
 	historyAGTransformedData:AgMeasures[] = [];
 	measures: AgMeasures[];
-	chartdata;
+	chartdata: ChartData;
 	tooManyRequests = false;
 	optionsdata : ChartOptions = {};
 	chartPeriods: AgChartPeriods[];
@@ -105,7 +108,7 @@ export class DataHistoryServices {
   }
 
 
-	prepareBarChartData(data: AgMeasures[], measure:string, found: number): void{
+	prepareBarChartData(data: AgMeasures[], measure:string, found: number): void {
 		const dates: any[]=[];
 		const values: number[]=[];
 		const colors: string[]=[];
@@ -137,48 +140,43 @@ export class DataHistoryServices {
 		if (measure=='rhum') axisLabel='Relative Humidity in %';
 
 
-		this.optionsdata={
+		this.optionsdata = {
 			maintainAspectRatio: true,
 			responsive: true,
-			legend: {
-				display: false
-			},
-
 			scales: {
-				xAxes: [{
+				x: {
 					display: true,
 					type: 'time',
+					offset: true,
 					time: {
-						unit: 'day',
-						unitStepSize: 1,
-						displayFormats: { 'day': 'MMM DD' }
+						unit: 'day'
 					}
-				}],
-				yAxes: [{
-					id: 'A',
+				},
+				y: {
 					display: true,
-					gridLines: {
+					grid: {
 						drawTicks: false,
 						drawOnChartArea: false
 					},
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: axisLabel,
+						text: axisLabel,
 					},
-					ticks: {
-						suggestedMax: 25,
-						beginAtZero: true
-					}
-				}]
+					beginAtZero: true,
+					suggestedMax: 25
+				},
+			},
+			plugins: {
+				legend: {
+					display: false
+				}
 			}
 		};
 
 		this.chartdata = {
 			labels: dates,
-			fill: false,
 			datasets: [
 				{
-					yAxisID: 'A',
 					categoryPercentage: 1.0,
 					minBarLength: 0,
 					barPercentage: 1.0,
