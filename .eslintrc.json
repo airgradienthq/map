@@ -14,7 +14,9 @@
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
-      "plugins": ["unused-imports"],
+      "plugins": [
+        "unused-imports"
+      ],
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
@@ -39,8 +41,13 @@
             "allowTemplateLiterals": true
           }
         ],
-        "object-curly-spacing": ["error", "always"],
-        "unused-imports/no-unused-imports": ["error"]
+        "object-curly-spacing": [
+          "error",
+          "always"
+        ],
+        "unused-imports/no-unused-imports": [
+          "error"
+        ]
       }
     },
     {
