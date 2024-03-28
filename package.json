@@ -26,6 +26,8 @@
     "@angular/router": "^16.2.12",
     "@ctrl/ngx-chartjs": "^8.0.0",
     "@maplibre/maplibre-gl-geocoder": "^1.5.0",
+    "@maptiler/sdk": "^1.2.1",
+    "@maptiler/weather": "^1.1.2",
     "@ng-select/ng-select": "^11.2.0",
     "bootstrap": "^4.6.1",
     "chart.js": "^3.6.1",
@@ -33,7 +35,6 @@
     "copyfiles": "^2.4.1",
     "eslint-plugin-unused-imports": "^2.0.0",
     "luxon": "^3.4.0",
-    "maplibre-gl": "^2.4.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.3"
