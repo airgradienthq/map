@@ -35,6 +35,15 @@ import { MessageService } from '../../../services/message.service';
 					Show Active Fires (NASA FIRMS)
 				</mat-checkbox>
 			</div>
+			<div fxLayout="column">
+				<mat-checkbox
+					[disabled]="(dataServices.loading$ | async)"
+					[(ngModel)]="this.dataServices.showWindLayer"
+					(ngModelChange)="showWindLayer()"
+				>
+					Show Wind Directions
+				</mat-checkbox>
+			</div>
 		</div>
 		
 	`
@@ -53,7 +62,9 @@ export class LayersConfigComponent {
 		this._messageService.sendMessage('toggleFirmsFiresLayer');
 	}
 
-
+	showWindLayer(): void {
+		this._messageService.sendMessage('toggleWindLayer');
+	}
 }
 
 

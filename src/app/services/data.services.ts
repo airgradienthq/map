@@ -39,6 +39,7 @@ export class DataServices {
 	currentOrgId = 'ag';
 	showOpenAQLocations = false;
 	showFirmsFires = false;
+	showWindLayer = false;
 
 	moveBack(): void {
 		//this.airmap.panBy(new Point(- this.oldx, - ( this.oldy -60 )));

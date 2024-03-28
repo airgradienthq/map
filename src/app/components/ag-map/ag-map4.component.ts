@@ -1,12 +1,20 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { Map, Marker, NavigationControl, AttributionControl, GeoJSONSourceSpecification } from 'maplibre-gl';
-import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
-import * as maplibre from 'maplibre-gl';
 import { firstValueFrom, Observable, Subject, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute } from '@angular/router';
+import {
+	Map,
+	config,
+	Marker,
+	NavigationControl,
+	AttributionControl,
+	GeoJSONSourceSpecification,
+} from '@maptiler/sdk';
+import * as mapTiler from '@maptiler/sdk';
+import { WindLayer } from '@maptiler/weather';
+import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 
 import { DataServices } from '../../services/data.services';
 import { ColorsServices } from '../../services/colors.services';
@@ -33,6 +41,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	private currentOrgId = 'ag';
 	private agLocations: MapLocation[];
 	private showOaqLayer = false;
+	private showWindLayer = false;
 	private showFirmsFiresLayer = false;
 	private geocoderControl: MaplibreGeocoder;
 	private destroy$: Subject<void> = new Subject();
@@ -65,6 +74,12 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 					this.createMap();
 					this.saveLocationParams();
 				}
+
+				if (m === 'toggleWindLayer') {
+					this.showWindLayer = this.dataServices.showWindLayer;
+					this.createMap();
+					this.saveLocationParams();
+				}
 			});
 
 	}
@@ -82,6 +97,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 					this.showOaqLayer = JSON.parse(params.get('showaq')) || false;
 					this.showFirmsFiresLayer = JSON.parse(params.get('showfirms')) || false;
 					this.dataServices.showFirmsFires = this.showFirmsFiresLayer;
+					this.showWindLayer = JSON.parse(params.get('showwindlayer')) || false;
+					this.dataServices.showWindLayer = this.showWindLayer;
 					this.dataServices.showOpenAQLocations = this.showOaqLayer;
 					this.createMap();
 				}
@@ -95,6 +112,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 	}
 
 	createMap(): void {
+		config.apiKey = 'vMpY3OLoCEkM7LpZcWdr';
+
 		const initialState = {
 			lng: this.currentLongitude,
 			lat: this.currentLatitide,
@@ -103,10 +122,14 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 
 		this.map = new Map({
 			container: this.mapContainer.nativeElement,
-			style: `https://api.maptiler.com/maps/streets-v2/style.json?key=vMpY3OLoCEkM7LpZcWdr`,
 			center: [initialState.lng, initialState.lat],
-			zoom: initialState.zoom,
 			attributionControl: false,
+			forceNoAttributionControl: true,
+			zoom: initialState.zoom,
+			terrainControl: false,
+			scaleControl: false,
+			geolocateControl: false,
+			navigationControl: false
 		});
 
 		this.map.addControl(new NavigationControl({}), 'top-left');
@@ -186,6 +209,14 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			this.displayFiresLayer();
 		}
 
+		if (this.showWindLayer) {
+			this.map.on('load',  () => {
+				const layer = new WindLayer({ maxAmount: 64 });
+				this.map.setPaintProperty("Water", 'fill-color', "rgba(0, 0, 0, 0.5)");
+				this.map.addLayer(layer, 'Water');
+			});
+		}
+
 		if (this.geocoderControl) {
 			this.map.removeControl(this.geocoderControl);
 		}
@@ -250,7 +281,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 			showResultsWhileTyping: true,
 			zoom: 10,
 			debounceSearch: 300,
-			maplibregl: maplibre
+			maplibregl: mapTiler
 		});
 		this.map.addControl(this.geocoderControl);
 	}
@@ -294,7 +325,7 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 				});
 		});
 
-		new Marker(el)
+		new Marker({ element: el })
 			.setLngLat([location.longitude, location.latitude])
 			.addTo(this.map);
 	}
@@ -304,7 +335,8 @@ export class agMap4Component implements AfterViewInit, OnDestroy {
 		lat = this.currentLatitide,
 		long = this.currentLongitude
 	): void {
-		const queryString = `?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}&showfirms=${this.showFirmsFiresLayer}`;
+		const queryString =
+			`?zoom=${zoom}&lat=${lat}&long=${long}&org=${this.currentOrgId}&showaq=${this.showOaqLayer}&showfirms=${this.showFirmsFiresLayer}&showwindlayer=${this.showWindLayer}`;
 		this.location.replaceState('', queryString);
 	}
 
